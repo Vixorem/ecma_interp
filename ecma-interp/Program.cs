@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using ecma_interp.Grammar;
 using System;
 using System.Text;
@@ -26,8 +27,9 @@ namespace ecma_interp
             parser.AddErrorListener(MyErrorListener<IToken>.INSTANCE);
             var ctx = parser.program();
             var visitor = new ECMAVisitor();
-            visitor.Visit(ctx);
+            var node = visitor.Visit(ctx);
             //Console.WriteLine(ctx.ToStringTree());
+            var printer = new ASTRepresenter((AST.Node)node);
         }
     }
 }
