@@ -16,6 +16,7 @@ namespace ecma_interp.Grammar
         {
             public int Start { get; set; }
             public int End { get; set; }
+            public string Text { get; set; }
         }
 
         public class SingleExprNode : Node
@@ -23,9 +24,46 @@ namespace ecma_interp.Grammar
 
         }
 
+        public class IdentNode : Node
+        {
+            public string Name { get; set; }
+        }
+
+        public class ExprSequenceNode : Node
+        {
+            public List<SingleExprNode> Exprs { get; set; }
+        }
+
         public class BlockNode : Node
         {
+            public StatementListNode Statements { get; set; }
+        }
 
+        public class ReturnNode : Node
+        {
+            public ExprSequenceNode ExprSeq { get; set; }
+        }
+
+        public class ContinueNode : Node
+        {
+
+        }
+
+        public class BreakNode : Node
+        {
+
+        }
+
+        // dynamic fields are used as a single statement
+        public class WhileNode : Node
+        {
+            public ExprSequenceNode ExprSeq { get; set; }
+            public dynamic Statement { get; set; }
+        }
+
+        public class StatementListNode : Node
+        {
+            public List<dynamic> Statements { get; set; }
         }
 
         public class ProgramNode : Node
@@ -51,28 +89,26 @@ namespace ecma_interp.Grammar
 
         public class FunctionExprNode : SingleExprNode
         {
-
+            public string Name { get; set; }
+            public FormalParamList Params { get; set; }
+            public dynamic Statement { get; set; }
         }
 
-        public class MemberIndexExprNode : SingleExprNode
+        public class FormalParamList : Node
+        {
+            public List<IdentNode> Idents { get; set; }
+        }
+
+        public class IfNode : Node
+        {
+            public ExprSequenceNode ExprSeq { get; set; }
+            public dynamic Statement { get; set; }
+            public dynamic ElseStatement { get; set; }
+        }
+
+        public class MemberIndExpr : SingleExprNode
         {
 
         }
-
-        public class MemberDotExprNode : SingleExprNode
-        {
-
-        }
-
-        public class ArgumentExprNode : SingleExprNode
-        {
-
-        }
-
-        public class ArgumentListNode : SingleExprNode
-        {
-
-        }
-
     }
 }
