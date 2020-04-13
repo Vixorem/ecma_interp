@@ -82,7 +82,7 @@ namespace ecma_interp.Grammar
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
             PrintLn($"Name: {root.Name}");
-            VisitNode(root.Init);
+            VisitNode((dynamic)root.Init);
             shift -= step;
         }
 
@@ -334,8 +334,8 @@ namespace ecma_interp.Grammar
             PrintLn($"End: {root.End}");
             root.Cond.Type = "Condition";
             VisitNode(root.Cond);
-            VisitNode(root.Statement);
-            VisitNode(root.AlterStatement);
+            VisitNode((dynamic)root.Statement);
+            VisitNode((dynamic)root.AlterStatement);
             shift -= step;
         }
 
@@ -350,7 +350,7 @@ namespace ecma_interp.Grammar
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
             root.Ind.Type = "Index expression";
-            VisitNode(root.Expr);
+            VisitNode((dynamic)root.Expr);
             VisitNode(root.Ind);
             shift -= step;
         }
@@ -365,7 +365,8 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            // TODO ??????????????????????????????????????????
+            VisitNode((dynamic)root.Expr);
+            VisitNode(root.Ident);
             shift -= step;
         }
     }

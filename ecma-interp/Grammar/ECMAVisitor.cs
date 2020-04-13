@@ -192,6 +192,17 @@ namespace ecma_interp.Grammar
             };
         }
 
+        public override object VisitMemberDotExpression([NotNull] ECMAScriptParser.MemberDotExpressionContext context)
+        {
+            return new AST.MemberDotExprNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Ident = (AST.IdentNode)Visit(context.identifierName())
+            };
+        }
+
         public override object VisitExpressionStatement([NotNull] ECMAScriptParser.ExpressionStatementContext context)
         {
             return Visit(context.expressionSequence());
@@ -302,7 +313,35 @@ namespace ecma_interp.Grammar
             };
         }
 
+        public override object VisitNewExpression([NotNull] ECMAScriptParser.NewExpressionContext context)
+        {
+            var expr = (AST.Node)Visit(context.singleExpression());
+            var args = (List<AST.Node>)Visit(context.arguments());
+            return new AST.NewExprNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Expr = new AST.ArgumentsExprNode
+                {
+                    Start = context.Start.StartIndex,
+                    End = context.Stop.StopIndex,
+                    LeftExpr = expr,
+                    Args = args
+                }
+            };
+        }
+
         public override object VisitIdentifierExpression([NotNull] ECMAScriptParser.IdentifierExpressionContext context)
+        {
+            return new AST.IdentNode
+            {
+                Name = context.Identifier().Symbol.Text,
+                Start = context.Identifier().Symbol.StartIndex,
+                End = context.Identifier().Symbol.StopIndex
+            };
+        }
+
+        public override object VisitIdentifierName([NotNull] ECMAScriptParser.IdentifierNameContext context)
         {
             return new AST.IdentNode
             {

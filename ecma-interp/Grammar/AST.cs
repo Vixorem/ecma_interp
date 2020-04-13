@@ -173,6 +173,8 @@ namespace ecma_interp.Grammar
         public class MemberDotExprNode : Node
         {
             public string Type = "Member expression (dot)";
+            public Node Expr { get; set; }
+            public IdentNode Ident { get; set; }
         }
 
         public class ArgumentsExprNode : Node
