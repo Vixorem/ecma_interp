@@ -8,20 +8,21 @@ namespace ecma_interp.Grammar
 {
     partial class ECMAVisitor : ECMAScriptBaseVisitor<object>
     {
-        public override dynamic VisitProgram([NotNull] ECMAScriptParser.ProgramContext context)
+        public override object VisitProgram([NotNull] ECMAScriptParser.ProgramContext context)
         {
             var program = new AST.ProgramNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex
+                End = context.Stop.StopIndex,
+                List = new List<AST.Node>(),
             };
 
-            program.Statement = Visit(context.GetChild(0));
+            program.List = (List<AST.Node>)Visit(context.sourceElements());
 
             return program;
         }
 
-        public override dynamic VisitEof([NotNull] ECMAScriptParser.EofContext context)
+        public override object VisitEof([NotNull] ECMAScriptParser.EofContext context)
         {
             return new AST.EmptyNode
             {
@@ -30,7 +31,7 @@ namespace ecma_interp.Grammar
             };
         }
 
-        public override dynamic VisitEos([NotNull] ECMAScriptParser.EosContext context)
+        public override object VisitEos([NotNull] ECMAScriptParser.EosContext context)
         {
             return new AST.EmptyNode
             {
@@ -39,24 +40,24 @@ namespace ecma_interp.Grammar
             };
         }
 
-        public override dynamic VisitStatementList([NotNull] ECMAScriptParser.StatementListContext context)
+        public override object VisitStatementList([NotNull] ECMAScriptParser.StatementListContext context)
         {
-            List<AST.StatementListNode> list = new List<AST.StatementListNode>();
+            List<AST.Node> list = new List<AST.Node>();
 
-            for (int i = 0; i < context.ChildCount; i += 2)
+            foreach (var s in context.statement())
             {
-                list.Add((dynamic)Visit(context.children[i]));
+                list.Add((AST.Node)Visit(s));
             }
 
             return list;
         }
 
-        public override dynamic VisitStatement([NotNull] ECMAScriptParser.StatementContext context)
-        {
-            return Visit(context.GetChild(0));
-        }
+        //public override dynamic VisitStatement([NotNull] ECMAScriptParser.StatementContext context)
+        //{
+        //    return Visit(context.GetChild(0));
+        //}
 
-        public override dynamic VisitVariableStatement([NotNull] ECMAScriptParser.VariableStatementContext context)
+        public override object VisitVariableStatement([NotNull] ECMAScriptParser.VariableStatementContext context)
         {
             var declList = new AST.VarDeclListNode
             {
@@ -64,46 +65,69 @@ namespace ecma_interp.Grammar
                 End = context.Stop.StopIndex,
             };
 
-            declList.VarDecls = (dynamic)Visit(context.children[1]);
+            declList.VarDecls = (List<AST.VarDeclNode>)Visit(context.variableDeclarationList());
 
             return declList;
         }
 
-        public override dynamic VisitVariableDeclarationList([NotNull] ECMAScriptParser.VariableDeclarationListContext context)
+        public override object VisitVariableDeclarationList([NotNull] ECMAScriptParser.VariableDeclarationListContext context)
         {
             List<AST.VarDeclNode> list = new List<AST.VarDeclNode>();
 
-            for (int i = 0; i < context.ChildCount; i += 2)
+            foreach (var v in context.variableDeclaration())
             {
-                list.Add((dynamic)Visit(context.children[i]));
+                list.Add((AST.VarDeclNode)Visit(v));
             }
 
             return list;
         }
 
-        public override dynamic VisitVariableDeclaration([NotNull] ECMAScriptParser.VariableDeclarationContext context)
+        public override object VisitVariableDeclaration([NotNull] ECMAScriptParser.VariableDeclarationContext context)
         {
             return new AST.VarDeclNode
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
                 Name = context.Start.Text,
-                Value = context.Stop.Text
+                Init = (context.initialiser() == null)
+                    ? (null)
+                    : ((AST.InitialiserNode)Visit(context.initialiser()))
             };
         }
 
-        public override dynamic VisitBlock([NotNull] ECMAScriptParser.BlockContext context)
+        public override object VisitInitialiser([NotNull] ECMAScriptParser.InitialiserContext context)
         {
-            AST.StatementListNode list = null;
-            if (context.ChildCount != 2)
+            var a = Visit(context.singleExpression());
+            return new AST.InitialiserNode
             {
-                list = (AST.StatementListNode)Visit(context.GetChild(0));
-            }
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Value = (context.singleExpression() == null)
+                    ? (null)
+                    : ((AST.Node)Visit(context.singleExpression()))
+            };
+        }
+
+        public override object VisitLiteralExpression([NotNull] ECMAScriptParser.LiteralExpressionContext context)
+        {
+            //TODO
+
+            return null;
+        }
+
+        public override object VisitNumericLiteral([NotNull] ECMAScriptParser.NumericLiteralContext context)
+        {
+            //TODO
+            return null;
+        }
+
+        public override object VisitBlock([NotNull] ECMAScriptParser.BlockContext context)
+        {
             return new AST.BlockNode
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                Statements = list
+                Statements = (AST.StatementListNode)Visit(context.statementList())
             };
         }
 
@@ -116,73 +140,64 @@ namespace ecma_interp.Grammar
             };
         }
 
-        public override dynamic VisitExpressionStatement([NotNull] ECMAScriptParser.ExpressionStatementContext context)
+        public override object VisitExpressionStatement([NotNull] ECMAScriptParser.ExpressionStatementContext context)
         {
-            return Visit(context.GetChild(0));
+            return Visit(context.expressionSequence());
         }
 
-        public override dynamic VisitExpressionSequence([NotNull] ECMAScriptParser.ExpressionSequenceContext context)
+        public override object VisitExpressionSequence([NotNull] ECMAScriptParser.ExpressionSequenceContext context)
         {
             AST.ExprSequenceNode exprSeq = new AST.ExprSequenceNode
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                Exprs = new List<AST.SingleExprNode>()
+                Exprs = new List<AST.Node>()
             };
 
-            for (int i = 0; i < context.ChildCount; i += 2)
+            foreach (var e in context.singleExpression())
             {
-                exprSeq.Exprs.Add((AST.SingleExprNode)Visit(context.children[i]));
+                exprSeq.Exprs.Add((AST.Node)Visit(e));
             }
 
             return exprSeq;
         }
 
-        public override dynamic VisitIfStatement([NotNull] ECMAScriptParser.IfStatementContext context)
+        public override object VisitIfStatement([NotNull] ECMAScriptParser.IfStatementContext context)
         {
             return new AST.IfNode
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                ExprSeq = (AST.ExprSequenceNode)Visit(context.children[2]),
-                Statement = Visit(context.children[4]),
-                ElseStatement = (context.ChildCount == 6)
-                    ? (Visit(context.children[6]))
-                    : (null)
+                ExprSeq = (AST.ExprSequenceNode)Visit(context.expressionSequence()),
+                Statement = (AST.Node)Visit(context.statement()[0]),
+                ElseStatement = (AST.Node)Visit(context.statement()[1])
             };
         }
 
-        public override dynamic VisitIterationStatement([NotNull] ECMAScriptParser.IterationStatementContext context)
+        public override object VisitWhileStatement([NotNull] ECMAScriptParser.WhileStatementContext context)
         {
             return new AST.WhileNode
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                Statement = Visit(context.children[1]),
-                ExprSeq = (AST.ExprSequenceNode)Visit(context.children[4])
+                Statement = (AST.Node)Visit(context.expressionSequence()),
+                ExprSeq = (AST.ExprSequenceNode)Visit(context.statement())
             };
         }
 
-        //public override object VisitSingleExpression([NotNull] ECMAScriptParser.SingleExpressionContext context)
-        //{
-        //    return base.VisitSingleExpression(context);
-        //}
-
-        public override dynamic VisitReturnStatement([NotNull] ECMAScriptParser.ReturnStatementContext context)
+        public override object VisitReturnStatement([NotNull] ECMAScriptParser.ReturnStatementContext context)
         {
             return new AST.ReturnNode
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                ExprSeq = (context.ChildCount == 2)
-                    ? (null)
-                    : ((AST.ExprSequenceNode)Visit(context.children[1]))
+                ExprSeq = ((AST.ExprSequenceNode)Visit(context.expressionSequence()))
             };
         }
 
-        public override dynamic VisitContinueStatement([NotNull] ECMAScriptParser.ContinueStatementContext context)
+        public override object VisitContinueStatement([NotNull] ECMAScriptParser.ContinueStatementContext context)
         {
-            if (context.ChildCount == 3)
+            if (context.Identifier() != null)
             {
                 throw new NotImplementedException(msg);
             }
@@ -194,9 +209,9 @@ namespace ecma_interp.Grammar
             };
         }
 
-        public override dynamic VisitBreakStatement([NotNull] ECMAScriptParser.BreakStatementContext context)
+        public override object VisitBreakStatement([NotNull] ECMAScriptParser.BreakStatementContext context)
         {
-            if (context.ChildCount == 3)
+            if (context.Identifier() != null)
             {
                 throw new NotImplementedException(msg);
             }
@@ -208,11 +223,129 @@ namespace ecma_interp.Grammar
             };
         }
 
-        public override dynamic VisitFunctionExpression([NotNull] ECMAScriptParser.FunctionExpressionContext context)
+        public override object VisitFunctionExpression([NotNull] ECMAScriptParser.FunctionExpressionContext context)
         {
-            //TODO: complete
-            return null;
+
+            AST.FunctionExprNode f = new AST.FunctionExprNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Name = (context.Identifier() == null)
+                    ? ("")
+                    : (context.Identifier().Symbol.Text),
+                Params = (context.formalParameterList() == null)
+                    ? (null)
+                       : ((AST.FormalParamList)Visit(context.formalParameterList())),
+                FuncBody = new AST.ExprSequenceNode()
+            };
+
+            f.FuncBody.Exprs = new List<AST.Node>();
+
+            f.FuncBody.Exprs.Add((AST.Node)Visit(context.functionBody()));
+
+            return f;
         }
+
+        public override object VisitIdentifierExpression([NotNull] ECMAScriptParser.IdentifierExpressionContext context)
+        {
+            return new AST.IdentNode
+            {
+                Name = context.Identifier().Symbol.Text,
+                Start = context.Identifier().Symbol.StartIndex,
+                End = context.Identifier().Symbol.StopIndex
+            };
+        }
+
+        public override object VisitFunctionDeclaration([NotNull] ECMAScriptParser.FunctionDeclarationContext context)
+        {
+            AST.FunctionDeclNode funDecl = new AST.FunctionDeclNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Name = (context.Identifier() == null)
+                    ? ("")
+                    : (context.Identifier().Symbol.Text),
+                Params = (context.formalParameterList() == null)
+                    ? (null)
+                    : ((AST.FormalParamList)Visit(context.formalParameterList())),
+                FuncBody = new AST.ExprSequenceNode()
+            };
+
+
+            funDecl.FuncBody.Exprs = (List<AST.Node>)Visit(context.functionBody());
+
+            return funDecl;
+        }
+
+        public override object VisitSourceElements([NotNull] ECMAScriptParser.SourceElementsContext context)
+        {
+            List<AST.Node> list = new List<AST.Node>();
+
+            foreach (var s in context.GetRuleContexts<ParserRuleContext>())
+            {
+                list.Add((AST.Node)Visit(s));
+            }
+
+            return list;
+        }
+
+        public override object VisitFormalParameterList([NotNull] ECMAScriptParser.FormalParameterListContext context)
+        {
+            AST.FormalParamList list = new AST.FormalParamList()
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Idents = new List<AST.IdentNode>()
+            };
+
+            foreach (var ident in context.Identifier())
+            {
+                list.Idents.Add(new AST.IdentNode
+                {
+                    Name = ident.Symbol.Text,
+                    Start = ident.Symbol.StartIndex,
+                    End = ident.Symbol.StopIndex
+                });
+            }
+
+            return list;
+        }
+
+        public override object VisitMemberIndexExpression([NotNull] ECMAScriptParser.MemberIndexExpressionContext context)
+        {
+            return new AST.MemberIndExprNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Ind = (AST.ExprSequenceNode)Visit(context.expressionSequence()),
+            };
+        }
+
+        public override object VisitArgumentsExpression([NotNull] ECMAScriptParser.ArgumentsExpressionContext context)
+        {
+            return new AST.ArgumentsExprNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                LeftExpr = (AST.Node)Visit(context.singleExpression()),
+                Args = (List<AST.Node>)Visit(context.arguments())
+            };
+        }
+
+        public override object VisitArgumentList([NotNull] ECMAScriptParser.ArgumentListContext context)
+        {
+            List<AST.Node> list = new List<AST.Node>();
+
+            foreach (var e in context.singleExpression())
+            {
+                list.Add((AST.Node)Visit(e));
+            }
+
+            return list;
+        }
+
+
     }
 
     // For unimplemented rules

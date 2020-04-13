@@ -29,7 +29,8 @@ namespace ecma_interp
             var visitor = new ECMAVisitor();
             var node = visitor.Visit(ctx);
             //Console.WriteLine(ctx.ToStringTree());
-            var printer = new ASTRepresenter((AST.Node)node);
+            var printer = new ASTRepresenter();
+            printer.VisitNode((dynamic)node);
         }
     }
 }

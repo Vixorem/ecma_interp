@@ -12,103 +12,168 @@ namespace ecma_interp.Grammar
     // TODO: Class fields are not implemented mostly but will be further.
     class AST
     {
-        public abstract class Node
+        public class Node
         {
             public int Start { get; set; }
             public int End { get; set; }
-            public string Text { get; set; }
         }
 
-        public class SingleExprNode : Node
-        {
+        //public abstract class SingleExprNode : Node
+        //{
+        //}
 
-        }
+        //public abstract class StatementNode : Node
+        //{
+
+        //}
 
         public class IdentNode : Node
         {
+            public string Type = "Identifier";
             public string Name { get; set; }
+        }
+
+        public class InitialiserNode : Node
+        {
+            public string Type = "Initialiser";
+            public Node Value { get; set; }
         }
 
         public class ExprSequenceNode : Node
         {
-            public List<SingleExprNode> Exprs { get; set; }
+            public string Type = "Expression sequence";
+            public List<Node> Exprs { get; set; }
         }
 
         public class BlockNode : Node
         {
+            public string Type = "Block";
             public StatementListNode Statements { get; set; }
         }
 
         public class ReturnNode : Node
         {
+            public string Type = "Return statement";
             public ExprSequenceNode ExprSeq { get; set; }
         }
 
         public class ContinueNode : Node
         {
-
+            public string Type = "Continue statement";
         }
 
         public class BreakNode : Node
         {
-
+            public string Type = "Break statement";
         }
 
         // dynamic fields are used as a single statement
         public class WhileNode : Node
         {
+            public string Type = "While";
             public ExprSequenceNode ExprSeq { get; set; }
-            public dynamic Statement { get; set; }
+            public Node Statement { get; set; }
         }
 
         public class StatementListNode : Node
         {
-            public List<dynamic> Statements { get; set; }
+            public string Type = "Statement list";
+            public List<Node> Statements { get; set; }
         }
 
         public class ProgramNode : Node
         {
-            public dynamic Statement { get; set; }
+            public string Type = "Program";
+            public List<Node> List { get; set; }
         }
 
         public class EmptyNode : Node
         {
+            public string Type = "Empty statement";
+        }
 
+        public class LiteralNode : Node
+        {
+            public dynamic Value { get; set; }
+        }
+
+        public class NumericLiteralNode : LiteralNode
+        {
+            //TODO: enum for dec, hex, oct???
+        }
+
+        public class NullLiteralNode : LiteralNode
+        {
+        }
+
+        public class BoolLiteralNode : LiteralNode
+        {
+        }
+
+        public class StringLiteralNode : LiteralNode
+        {
         }
 
         public class VarDeclNode : Node
         {
+            public string Type = "Variable declaration";
             public string Name { get; set; }
-            public string Value { get; set; }
+            public InitialiserNode Init { get; set; }
         }
 
         public class VarDeclListNode : Node
         {
+            public string Type = "Variable declaration list";
             public List<VarDeclNode> VarDecls { get; set; } = new List<VarDeclNode>();
         }
 
-        public class FunctionExprNode : SingleExprNode
+        public class FunctionExprNode : Node
         {
+            public string Type = "Function expression";
             public string Name { get; set; }
             public FormalParamList Params { get; set; }
-            public dynamic Statement { get; set; }
+            public ExprSequenceNode FuncBody { get; set; }
+        }
+
+        public class FunctionDeclNode : Node
+        {
+            public string Type = "Function declaration";
+            public string Name { get; set; }
+            public FormalParamList Params { get; set; }
+            public ExprSequenceNode FuncBody { get; set; }
         }
 
         public class FormalParamList : Node
         {
+            public string Type = "Formal parameters list";
             public List<IdentNode> Idents { get; set; }
         }
 
+
         public class IfNode : Node
         {
+            public string Type = "if statement";
             public ExprSequenceNode ExprSeq { get; set; }
-            public dynamic Statement { get; set; }
-            public dynamic ElseStatement { get; set; }
+            public Node Statement { get; set; }
+            public Node ElseStatement { get; set; }
         }
 
-        public class MemberIndExpr : SingleExprNode
+        public class MemberIndExprNode : Node
         {
+            public string Type = "Member expression (index)";
+            public Node Expr { get; set; }
+            public ExprSequenceNode Ind { get; set; }
+        }
 
+        public class MemberDotExprNode : Node
+        {
+            public string Type = "Member expression (dot)";
+        }
+
+        public class ArgumentsExprNode : Node
+        {
+            public Node LeftExpr { get; set; }
+            public List<Node> Args { get; set; }
         }
     }
 }
