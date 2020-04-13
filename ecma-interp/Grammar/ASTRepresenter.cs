@@ -82,7 +82,7 @@ namespace ecma_interp.Grammar
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
             PrintLn($"Name: {root.Name}");
-            VisitNode((dynamic)root.Init);
+            VisitNode((AST.InitialiserNode)root.Init);
             shift -= step;
         }
 
@@ -357,6 +357,7 @@ namespace ecma_interp.Grammar
 
         public void VisitNode(AST.MemberDotExprNode root)
         {
+            //TODO: когда нуль, то амбиджес
             if (root == null)
             {
                 return;
