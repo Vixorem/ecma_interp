@@ -97,7 +97,6 @@ namespace ecma_interp.Grammar
 
         public override object VisitInitialiser([NotNull] ECMAScriptParser.InitialiserContext context)
         {
-            var a = Visit(context.singleExpression());
             return new AST.InitialiserNode
             {
                 Start = context.Start.StartIndex,
@@ -110,15 +109,68 @@ namespace ecma_interp.Grammar
 
         public override object VisitLiteralExpression([NotNull] ECMAScriptParser.LiteralExpressionContext context)
         {
-            //TODO
+            if (context.literal().NullLiteral() != null)
+            {
+                return new AST.NullLiteralNode
+                {
+                    Start = context.Start.StartIndex,
+                    End = context.Stop.StopIndex,
+                    Value = "null"
+                };
+            }
 
-            return null;
+            if (context.literal().BooleanLiteral() != null)
+            {
+                return new AST.BoolLiteralNode
+                {
+                    Start = context.Start.StartIndex,
+                    End = context.Stop.StopIndex,
+                    Value = context.literal().BooleanLiteral().Symbol.Text
+                };
+            }
+
+            if (context.literal().StringLiteral() != null)
+            {
+                return new AST.StringLiteralNode
+                {
+                    Start = context.Start.StartIndex,
+                    End = context.Stop.StopIndex,
+                    Value = context.literal().StringLiteral().Symbol.Text
+                };
+            }
+
+            return (AST.NumericLiteralNode)Visit(context.literal().numericLiteral());
+
         }
 
         public override object VisitNumericLiteral([NotNull] ECMAScriptParser.NumericLiteralContext context)
         {
-            //TODO
-            return null;
+            if (context.HexIntegerLiteral() != null)
+            {
+                return new AST.NumericLiteralNode
+                {
+                    Start = context.Start.StartIndex,
+                    End = context.Stop.StopIndex,
+                    Value = context.HexIntegerLiteral().Symbol.Text
+                };
+            }
+
+            if (context.DecimalLiteral() != null)
+            {
+                return new AST.NumericLiteralNode
+                {
+                    Start = context.Start.StartIndex,
+                    End = context.Stop.StopIndex,
+                    Value = context.DecimalLiteral().Symbol.Text
+                };
+            }
+
+            return new AST.NumericLiteralNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Value = context.OctalIntegerLiteral().Symbol.Text
+            };
         }
 
         public override object VisitBlock([NotNull] ECMAScriptParser.BlockContext context)
@@ -168,9 +220,9 @@ namespace ecma_interp.Grammar
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                ExprSeq = (AST.ExprSequenceNode)Visit(context.expressionSequence()),
+                Cond = (AST.ExprSequenceNode)Visit(context.expressionSequence()),
                 Statement = (AST.Node)Visit(context.statement()[0]),
-                ElseStatement = (AST.Node)Visit(context.statement()[1])
+                AlterStatement = (AST.Node)Visit(context.statement()[1])
             };
         }
 
@@ -180,8 +232,8 @@ namespace ecma_interp.Grammar
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                Statement = (AST.Node)Visit(context.expressionSequence()),
-                ExprSeq = (AST.ExprSequenceNode)Visit(context.statement())
+                Body = (AST.Node)Visit(context.expressionSequence()),
+                Cond = (AST.ExprSequenceNode)Visit(context.statement())
             };
         }
 
@@ -225,8 +277,7 @@ namespace ecma_interp.Grammar
 
         public override object VisitFunctionExpression([NotNull] ECMAScriptParser.FunctionExpressionContext context)
         {
-
-            AST.FunctionExprNode f = new AST.FunctionExprNode
+            return new AST.FunctionExprNode
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
@@ -236,14 +287,19 @@ namespace ecma_interp.Grammar
                 Params = (context.formalParameterList() == null)
                     ? (null)
                        : ((AST.FormalParamList)Visit(context.formalParameterList())),
-                FuncBody = new AST.ExprSequenceNode()
+                FuncBody = (AST.ExprSequenceNode)Visit(context.functionBody())
             };
+        }
 
-            f.FuncBody.Exprs = new List<AST.Node>();
-
-            f.FuncBody.Exprs.Add((AST.Node)Visit(context.functionBody()));
-
-            return f;
+        public override object VisitFunctionBody([NotNull] ECMAScriptParser.FunctionBodyContext context)
+        {
+            return new AST.ExprSequenceNode
+            {
+                Type = "Function body",
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Exprs = (List<AST.Node>)Visit(context.sourceElements())
+            };
         }
 
         public override object VisitIdentifierExpression([NotNull] ECMAScriptParser.IdentifierExpressionContext context)
@@ -258,7 +314,7 @@ namespace ecma_interp.Grammar
 
         public override object VisitFunctionDeclaration([NotNull] ECMAScriptParser.FunctionDeclarationContext context)
         {
-            AST.FunctionDeclNode funDecl = new AST.FunctionDeclNode
+            return new AST.FunctionDeclNode
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
@@ -268,13 +324,8 @@ namespace ecma_interp.Grammar
                 Params = (context.formalParameterList() == null)
                     ? (null)
                     : ((AST.FormalParamList)Visit(context.formalParameterList())),
-                FuncBody = new AST.ExprSequenceNode()
+                FuncBody = (AST.ExprSequenceNode)Visit(context.functionBody())
             };
-
-
-            funDecl.FuncBody.Exprs = (List<AST.Node>)Visit(context.functionBody());
-
-            return funDecl;
         }
 
         public override object VisitSourceElements([NotNull] ECMAScriptParser.SourceElementsContext context)

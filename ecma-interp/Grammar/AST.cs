@@ -71,8 +71,8 @@ namespace ecma_interp.Grammar
         public class WhileNode : Node
         {
             public string Type = "While";
-            public ExprSequenceNode ExprSeq { get; set; }
-            public Node Statement { get; set; }
+            public ExprSequenceNode Cond { get; set; }
+            public Node Body { get; set; }
         }
 
         public class StatementListNode : Node
@@ -92,26 +92,31 @@ namespace ecma_interp.Grammar
             public string Type = "Empty statement";
         }
 
-        public class LiteralNode : Node
+        public abstract class LiteralNode : Node
         {
-            public dynamic Value { get; set; }
+            public string Type = "Literal";
+            public string Value { get; set; }
         }
 
         public class NumericLiteralNode : LiteralNode
         {
+            public new string Type = "Numeric literal";
             //TODO: enum for dec, hex, oct???
         }
 
         public class NullLiteralNode : LiteralNode
         {
+            public new string Type = "Null literal";
         }
 
         public class BoolLiteralNode : LiteralNode
         {
+            public new string Type = "Bool literal";
         }
 
         public class StringLiteralNode : LiteralNode
         {
+            public new string Type = "String literal";
         }
 
         public class VarDeclNode : Node
@@ -153,9 +158,9 @@ namespace ecma_interp.Grammar
         public class IfNode : Node
         {
             public string Type = "if statement";
-            public ExprSequenceNode ExprSeq { get; set; }
+            public ExprSequenceNode Cond { get; set; }
             public Node Statement { get; set; }
-            public Node ElseStatement { get; set; }
+            public Node AlterStatement { get; set; }
         }
 
         public class MemberIndExprNode : Node
@@ -174,6 +179,12 @@ namespace ecma_interp.Grammar
         {
             public Node LeftExpr { get; set; }
             public List<Node> Args { get; set; }
+        }
+
+        public class NewExprNode : Node
+        {
+            public string Type = "new expression";
+            public ArgumentsExprNode Expr { get; set; }
         }
     }
 }
