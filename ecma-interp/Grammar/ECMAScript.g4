@@ -388,13 +388,13 @@ singleExpression:
 	| '-' singleExpression													# UnaryMinusExpression
 	| '~' singleExpression													# BitNotExpression
 	| '!' singleExpression													# NotExpression
-	| singleExpression ('*' | '/' | '%') singleExpression					# MultiplicativeExpression
-	| singleExpression ('+' | '-') singleExpression							# AdditiveExpression
-	| singleExpression ('<<' | '>>' | '>>>') singleExpression				# BitShiftExpression
-	| singleExpression ('<' | '>' | '<=' | '>=') singleExpression			# RelationalExpression
+	| singleExpression multOpers singleExpression							# MultiplicativeExpression
+	| singleExpression additOpers singleExpression							# AdditiveExpression
+	| singleExpression bitWiseSigns singleExpression						# BitShiftExpression
+	| singleExpression relatOper singleExpression							# RelationalExpression
 	| singleExpression Instanceof singleExpression							# InstanceofExpression
 	| singleExpression In singleExpression									# InExpression
-	| singleExpression ('==' | '!=' | '===' | '!==') singleExpression		# EqualityExpression
+	| singleExpression eqOper singleExpression								# EqualityExpression
 	| singleExpression '&' singleExpression									# BitAndExpression
 	| singleExpression '^' singleExpression									# BitXOrExpression
 	| singleExpression '|' singleExpression									# BitOrExpression
@@ -402,13 +402,19 @@ singleExpression:
 	| singleExpression '||' singleExpression								# LogicalOrExpression
 	| singleExpression '?' singleExpression ':' singleExpression			# TernaryExpression
 	| singleExpression '=' singleExpression									# AssignmentExpression
-	| singleExpression assignmentOperator singleExpression					# AssignmentOperatorExpression
+	//| singleExpression assignmentOperator singleExpression					# AssignmentOperatorExpression
 	| This																	# ThisExpression
 	| Identifier															# IdentifierExpression
 	| literal																# LiteralExpression
 	| arrayLiteral															# ArrayLiteralExpression
 	| objectLiteral															# ObjectLiteralExpression
 	| '(' expressionSequence ')'											# ParenthesizedExpression;
+
+multOpers: ('*' | '/' | '%');
+additOpers: ('-' | '+');
+bitWiseSigns: ('<<' | '>>' | '>>>');
+relatOper: ('<' | '>' | '<=' | '>=');
+eqOper: ('==' | '!=' | '===' | '!==');
 
 /// AssignmentOperator : one of / *= /= %= += -= <<= >>= >>>= &= ^= |=
 assignmentOperator:

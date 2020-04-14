@@ -47,9 +47,12 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            foreach (var t in root.List)
+            if (root.List != null)
             {
-                VisitNode((dynamic)t);
+                foreach (var t in root.List)
+                {
+                    VisitNode((dynamic)t);
+                }
             }
             shift -= step;
         }
@@ -64,9 +67,12 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            foreach (var t in root.VarDecls)
+            if (root.VarDecls != null)
             {
-                VisitNode((dynamic)t);
+                foreach (var t in root.VarDecls)
+                {
+                    VisitNode((dynamic)t);
+                }
             }
             shift -= step;
         }
@@ -181,9 +187,12 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            foreach (var t in root.Exprs)
+            if (root.Exprs != null)
             {
-                VisitNode((dynamic)t);
+                foreach (var t in root.Exprs)
+                {
+                    VisitNode((dynamic)t);
+                }
             }
             shift -= step;
         }
@@ -251,9 +260,12 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            foreach (var t in root.Statements)
+            if (root.Statements != null)
             {
-                VisitNode((dynamic)t);
+                foreach (var t in root.Statements)
+                {
+                    VisitNode((dynamic)t);
+                }
             }
             shift -= step;
         }
@@ -315,9 +327,12 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            foreach (var t in root.Idents)
+            if (root.Idents != null)
             {
-                VisitNode((dynamic)t);
+                foreach (var t in root.Idents)
+                {
+                    VisitNode((dynamic)t);
+                }
             }
             shift -= step;
         }
@@ -335,7 +350,13 @@ namespace ecma_interp.Grammar
             root.Cond.Type = "Condition";
             VisitNode(root.Cond);
             VisitNode((dynamic)root.Statement);
-            VisitNode((dynamic)root.AlterStatement);
+            if (root.AlterStatement != null)
+            {
+                shift -= step;
+                PrintLn($"+Alternative");
+                shift += step;
+                VisitNode((dynamic)root.AlterStatement);
+            }
             shift -= step;
         }
 
@@ -357,7 +378,6 @@ namespace ecma_interp.Grammar
 
         public void VisitNode(AST.MemberDotExprNode root)
         {
-            //TODO: когда нуль, то амбиджес
             if (root == null)
             {
                 return;
@@ -368,6 +388,232 @@ namespace ecma_interp.Grammar
             PrintLn($"End: {root.End}");
             VisitNode((dynamic)root.Expr);
             VisitNode(root.Ident);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.NewExprNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.DeleteNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.VoidNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.TypeofNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.UnaryOperNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.PostIncExprNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.AdditiveNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            var sign = (root.Oper == AST.AdditiveNode.OperType.Add)
+                    ? ("+")
+                    : ("-");
+            PrintLn($"+{root.Type} ({sign})");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            shift -= step;
+        }
+
+        public void VisitNode(AST.MultiplicNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            string sign;
+            if (root.Oper == AST.MultiplicNode.OperType.Div)
+            {
+                sign = "/";
+            }
+            else if (root.Oper == AST.MultiplicNode.OperType.Mul)
+            {
+                sign = "*";
+            }
+            else
+            {
+                sign = "%";
+            }
+            PrintLn($"+{root.Type} ({sign})");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            shift -= step;
+        }
+
+        public void VisitNode(AST.BitWiseNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type} ({root.Sign})");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            shift -= step;
+        }
+
+        public void VisitNode(AST.PostDecExprNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.PrefIncExprNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.PrefDecExprNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.FunctorExprNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.LeftExpr);
+            if (root.Args != null)
+            {
+                foreach (var t in root.Args)
+                {
+                    VisitNode((dynamic)t);
+                }
+            }
             shift -= step;
         }
     }

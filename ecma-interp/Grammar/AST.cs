@@ -7,94 +7,84 @@ namespace ecma_interp.Grammar
     /*
      The class represents Abstract Syntax Tree for JavaScript grammar.
      It's built within ECMAVisitor class.
-         */
+    */
 
     // TODO: Class fields are not implemented mostly but will be further.
     class AST
     {
         public class Node
         {
+            public string Type = "Node";
             public int Start { get; set; }
             public int End { get; set; }
         }
-
-        //public abstract class SingleExprNode : Node
-        //{
-        //}
-
-        //public abstract class StatementNode : Node
-        //{
-
-        //}
-
         public class IdentNode : Node
         {
-            public string Type = "Identifier";
+            public new string Type = "Identifier";
             public string Name { get; set; }
         }
 
         public class InitialiserNode : Node
         {
-            public string Type = "Initialiser";
+            public new string Type = "Initialiser";
             public Node Value { get; set; }
         }
 
         public class ExprSequenceNode : Node
         {
-            public string Type = "Expression sequence";
+            public new string Type = "Expression sequence";
             public List<Node> Exprs { get; set; }
         }
 
         public class BlockNode : Node
         {
-            public string Type = "Block";
+            public new string Type = "Block";
             public StatementListNode Statements { get; set; }
         }
 
         public class ReturnNode : Node
         {
-            public string Type = "Return statement";
+            public new string Type = "Return statement";
             public ExprSequenceNode ExprSeq { get; set; }
         }
 
         public class ContinueNode : Node
         {
-            public string Type = "Continue statement";
+            public new string Type = "Continue statement";
         }
 
         public class BreakNode : Node
         {
-            public string Type = "Break statement";
+            public new string Type = "Break statement";
         }
 
-        // dynamic fields are used as a single statement
         public class WhileNode : Node
         {
-            public string Type = "While";
+            public new string Type = "While";
             public ExprSequenceNode Cond { get; set; }
             public Node Body { get; set; }
         }
 
         public class StatementListNode : Node
         {
-            public string Type = "Statement list";
+            public new string Type = "Statement list";
             public List<Node> Statements { get; set; }
         }
 
         public class ProgramNode : Node
         {
-            public string Type = "Program";
+            public new string Type = "Program";
             public List<Node> List { get; set; }
         }
 
         public class EmptyNode : Node
         {
-            public string Type = "Empty statement";
+            public new string Type = "Empty statement";
         }
 
         public abstract class LiteralNode : Node
         {
-            public string Type = "Literal";
+            public new string Type = "Literal";
             public string Value { get; set; }
         }
 
@@ -121,20 +111,20 @@ namespace ecma_interp.Grammar
 
         public class VarDeclNode : Node
         {
-            public string Type = "Variable declaration";
+            public new string Type = "Variable declaration";
             public string Name { get; set; }
             public InitialiserNode Init { get; set; }
         }
 
         public class VarDeclListNode : Node
         {
-            public string Type = "Variable declaration list";
+            public new string Type = "Variable declaration list";
             public List<VarDeclNode> VarDecls { get; set; } = new List<VarDeclNode>();
         }
 
         public class FunctionExprNode : Node
         {
-            public string Type = "Function expression";
+            public new string Type = "Function expression";
             public string Name { get; set; }
             public FormalParamList Params { get; set; }
             public ExprSequenceNode FuncBody { get; set; }
@@ -142,7 +132,7 @@ namespace ecma_interp.Grammar
 
         public class FunctionDeclNode : Node
         {
-            public string Type = "Function declaration";
+            public new string Type = "Function declaration";
             public string Name { get; set; }
             public FormalParamList Params { get; set; }
             public ExprSequenceNode FuncBody { get; set; }
@@ -150,14 +140,14 @@ namespace ecma_interp.Grammar
 
         public class FormalParamList : Node
         {
-            public string Type = "Formal parameters list";
+            public new string Type = "Formal parameters list";
             public List<IdentNode> Idents { get; set; }
         }
 
 
         public class IfNode : Node
         {
-            public string Type = "if statement";
+            public new string Type = "if statement";
             public ExprSequenceNode Cond { get; set; }
             public Node Statement { get; set; }
             public Node AlterStatement { get; set; }
@@ -165,28 +155,154 @@ namespace ecma_interp.Grammar
 
         public class MemberIndExprNode : Node
         {
-            public string Type = "Member expression (index)";
+            public new string Type = "Member expression (index)";
             public Node Expr { get; set; }
             public ExprSequenceNode Ind { get; set; }
         }
 
         public class MemberDotExprNode : Node
         {
-            public string Type = "Member expression (dot)";
+            public new string Type = "Member expression (dot)";
             public Node Expr { get; set; }
             public IdentNode Ident { get; set; }
         }
 
-        public class ArgumentsExprNode : Node
+        //Functor is ment to be an expr with parenthesis
+        public class FunctorExprNode : Node
         {
+            public new string Type = "Functor expression";
             public Node LeftExpr { get; set; }
             public List<Node> Args { get; set; }
         }
 
         public class NewExprNode : Node
         {
-            public string Type = "new expression";
-            public ArgumentsExprNode Expr { get; set; }
+            public new string Type = "'new' expression";
+            public Node Expr { get; set; }
+        }
+
+        public class PostIncExprNode : Node
+        {
+            public new string Type = "Postfix increment";
+            public Node Expr { get; set; }
+        }
+
+        public class PostDecExprNode : Node
+        {
+            public new string Type = "Postfix decrement";
+            public Node Expr { get; set; }
+        }
+
+        public class PrefIncExprNode : Node
+        {
+            public string Type = "Prefix increment";
+            public Node Expr { get; set; }
+        }
+
+        public class PrefDecExprNode : Node
+        {
+            public new string Type = "Prefix decrement";
+            public Node Expr { get; set; }
+        }
+
+        public class DeleteNode : Node
+        {
+            public new string Type = "Delete statement";
+            public Node Expr { get; set; }
+        }
+
+        public class VoidNode : Node
+        {
+            public new string Type = "Void statement";
+            public Node Expr { get; set; }
+        }
+
+        public class TypeofNode : Node
+        {
+            public new string Type = "Typeof statement";
+            public Node Expr { get; set; }
+        }
+
+        public class UnaryOperNode : Node
+        {
+            public new string Type = "Unary operation";
+            public Node Expr { get; set; }
+        }
+
+        public class UnaryPlusNode : UnaryOperNode
+        {
+            public new string Type = "Unary plus";
+        }
+
+        public class UnaryMinusNode : UnaryOperNode
+        {
+            public new string Type = "Unary minus";
+        }
+
+        public class UnaryNotNode : UnaryOperNode
+        {
+            public new string Type = "Negation";
+        }
+
+        public class UnaryBitNotNode : UnaryOperNode
+        {
+            public new string Type = "Bit negation";
+        }
+
+        public class MultiplicNode : Node
+        {
+            public enum OperType
+            {
+                Mul,
+                Div,
+                Mod
+            }
+            public new string Type = "Multiplicative operation";
+            public OperType Oper { get; set; }
+            public Node Left { get; set; }
+            public Node Right { get; set; }
+        }
+
+        public class AdditiveNode : Node
+        {
+            public enum OperType
+            {
+                Add,
+                Sub
+            }
+            public new string Type = "Additive operation";
+            public OperType Oper { get; set; }
+            public Node Left { get; set; }
+            public Node Right { get; set; }
+        }
+
+        public class BitWiseNode : Node
+        {
+            public enum WiseType
+            {
+                ZeroLeft,
+                SignedRight,
+                ZeroRight
+            }
+            public new string Type = "Bitwise operator";
+            public string Sign;
+            public WiseType Wise { get; set; }
+            public Node Left { get; set; }
+            public Node Right { get; set; }
+        }
+
+        public class RelOperNode : Node
+        {
+            public enum RelType
+            {
+                Less,
+                Greater,
+                LessGr,
+                GreaterLs
+            }
+            public RelType Rel { get; set; }
+            public new string Type = "Relational operator";
+            public string Sign { get; set; }
         }
     }
 }
