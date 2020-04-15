@@ -400,7 +400,7 @@ singleExpression:
 	| singleExpression '|' singleExpression									# BitOrExpression
 	| singleExpression '&&' singleExpression								# LogicalAndExpression
 	| singleExpression '||' singleExpression								# LogicalOrExpression
-	| singleExpression '?' singleExpression ':' singleExpression			# TernaryExpression
+	//| singleExpression '?' singleExpression ':' singleExpression			# TernaryExpression
 	| singleExpression '=' singleExpression									# AssignmentExpression
 	//| singleExpression assignmentOperator singleExpression					# AssignmentOperatorExpression
 	| This																	# ThisExpression

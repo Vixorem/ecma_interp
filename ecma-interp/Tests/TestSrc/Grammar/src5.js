@@ -7,3 +7,7 @@ var и = +(a * b - ((c / 2) % k));
 ~a;
 !a;
 typeof a;
+a || b || c;
+a && k;
+a | c;
+a ^ k;

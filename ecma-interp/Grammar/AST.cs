@@ -223,6 +223,13 @@ namespace ecma_interp.Grammar
             public Node Expr { get; set; }
         }
 
+        public class InstanceOfNode : Node
+        {
+            public new string Type = "InstanceOf statement";
+            public Node Left { get; set; }
+            public Node Right { get; set; }
+        }
+
         public class UnaryOperNode : Node
         {
             public new string Type = "Unary operation";
@@ -297,12 +304,100 @@ namespace ecma_interp.Grammar
             {
                 Less,
                 Greater,
-                LessGr,
-                GreaterLs
+                LessEq,
+                GreaterEq
             }
             public RelType Rel { get; set; }
             public new string Type = "Relational operator";
             public string Sign { get; set; }
+        }
+
+        public class BinaryBitOperNode : Node
+        {
+            public enum OperType
+            {
+                BitAnd,
+                BitOr,
+                BitXor
+            }
+            public new string Type = "Binary bit operation";
+            public string Sign { get; set; }
+            public OperType Oper { get; set; }
+            public Node Left { get; set; }
+            public Node Right { get; set; }
+        }
+
+        public class BinaryLogicOperNode : Node
+        {
+            public enum OperType
+            {
+                And,
+                Or
+            }
+            public new string Type = "Binary logic operation";
+            public string Sign { get; set; }
+            public OperType Oper { get; set; }
+            public Node Left { get; set; }
+            public Node Right { get; set; }
+        }
+
+        public class InExprNode : Node
+        {
+            public new string Type = "'in' expression";
+            public Node Obj { get; set; }
+            public Node Cls { get; set; }
+        }
+
+        public class ParenthExprNode : Node
+        {
+            public new string Type = "Parenthesized expression";
+            public Node Expr { get; set; }
+        }
+
+        public class AssignmentExprNode : Node
+        {
+            public new string Type = "Assignment expression";
+            public Node Left { get; set; }
+            public Node Right { get; set; }
+        }
+
+        public class ThisExprNode : Node
+        {
+            public new string Type = "'this' statement";
+        }
+
+       
+        public class ArrayLiteralExprNode : Node
+        {
+            public new string Type = "Array literal";
+            public List<Node> Exprs { get; set; }
+        }
+
+        public class PropertyExprAssignmentNode : Node
+        {
+            public new string Type = "Property assignment";
+            public Node PropName { get; set; }
+            public Node Expr { get; set; }
+        }
+
+        public class PropertyGetterNode : Node
+        {
+            public new string Type = "Property getter";
+            public Node Getter { get; set; }
+            public Node FuncBody { get; set; }
+        }
+
+        public class PropertySetterNode : Node
+        {
+            public new string Type = "Property setter";
+            public Node Param { get; set; }
+            public Node FuncBody { get; set; }
+        }
+
+        public class ObjectLiteralExprNode : Node
+        {
+            public new string Type = "Object literal";
+            public List<Node> Exprs { get; set; }
         }
     }
 }

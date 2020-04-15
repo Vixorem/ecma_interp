@@ -386,6 +386,8 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
+            root.Expr.Type = "Object";
+            root.Ident.Type = "Property";
             VisitNode((dynamic)root.Expr);
             VisitNode(root.Ident);
             shift -= step;
@@ -616,5 +618,89 @@ namespace ecma_interp.Grammar
             }
             shift -= step;
         }
+
+        public void VisitNode(AST.RelOperNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.BinaryBitOperNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.BinaryLogicOperNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.InExprNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.ParenthExprNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.AssignmentExprNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.ObjectLiteralExprNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.PropertyExprAssignmentNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.PropertyGetterNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.PropertySetterNode root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VisitNode(AST.ThisExprNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            shift -= step;
+        }
+
+        public void VisitNode(AST.ArrayLiteralExprNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            if (root.Exprs != null)
+            {
+                foreach (var a in root.Exprs)
+                {
+                    VisitNode(a);
+                }
+            }
+            shift -= step;
+        }
+
     }
 }
