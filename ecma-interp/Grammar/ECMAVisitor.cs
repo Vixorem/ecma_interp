@@ -481,6 +481,70 @@ namespace ecma_interp.Grammar
             };
         }
 
+        public override object VisitReservedWord([NotNull] ECMAScriptParser.ReservedWordContext context)
+        {
+            if (context.NullLiteral() != null)
+            {
+                return new AST.NullLiteralNode
+                {
+                    Start = context.NullLiteral().Symbol.StartIndex,
+                    End = context.NullLiteral().Symbol.StopIndex,
+                    Value = "null"
+                };
+            }
+            else if (context.BooleanLiteral() != null)
+            {
+                return new AST.BoolLiteralNode
+                {
+                    Start = context.BooleanLiteral().Symbol.StartIndex,
+                    End = context.BooleanLiteral().Symbol.StopIndex,
+                    Value = context.BooleanLiteral().Symbol.Text
+                };
+            }
+
+            return Visit(context.keyword());
+        }
+
+        public override object VisitKeyword([NotNull] ECMAScriptParser.KeywordContext context)
+        {
+            return new AST.KeyWordNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Start.StopIndex,
+                Kword = context.Start.Text
+            };
+        }
+
+        public override object VisitEqualityExpression([NotNull] ECMAScriptParser.EqualityExpressionContext context)
+        {
+            var sign = context.Start.Text;
+            AST.EqualityExprNode.OperType op;
+            if (sign == "==")
+            {
+                op = AST.EqualityExprNode.OperType.Eq;
+            }
+            else if (sign == "!=")
+            {
+                op = AST.EqualityExprNode.OperType.NotEq;
+            }
+            else if (sign == "===")
+            {
+                op = AST.EqualityExprNode.OperType.StrictEq;
+            }
+            else
+            {
+                op = AST.EqualityExprNode.OperType.NotStrictEq;
+            }
+
+            return new AST.EqualityExprNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Start.StopIndex,
+                Sign = sign,
+                Oper = op
+            };
+        }
+
         public override object VisitIdentifierName([NotNull] ECMAScriptParser.IdentifierNameContext context)
         {
             return new AST.IdentNode

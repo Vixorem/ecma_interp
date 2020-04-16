@@ -449,7 +449,49 @@ namespace ecma_interp.Grammar
             shift -= step;
         }
 
-        public void VisitNode(AST.UnaryOperNode root)
+        public void VisitNode(AST.UnaryPlusNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{(dynamic)root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.UnaryMinusNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{(dynamic)root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.UnaryNotNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{(dynamic)root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+        }
+
+        public void VisitNode(AST.InstanceOfNode root)
         {
             if (root == null)
             {
@@ -459,7 +501,14 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            VisitNode((dynamic)root.Expr);
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Right);
+            shift -= step;
             shift -= step;
         }
 
@@ -496,7 +545,7 @@ namespace ecma_interp.Grammar
             shift -= step;
             PrintLn("+Right");
             shift += step;
-            VisitNode((dynamic)root.Left);
+            VisitNode((dynamic)root.Right);
             shift -= step;
             shift -= step;
         }
@@ -530,7 +579,7 @@ namespace ecma_interp.Grammar
             shift -= step;
             PrintLn("+Right");
             shift += step;
-            VisitNode((dynamic)root.Left);
+            VisitNode((dynamic)root.Right);
             shift -= step;
             shift -= step;
         }
@@ -551,8 +600,22 @@ namespace ecma_interp.Grammar
             shift -= step;
             PrintLn("+Right");
             shift += step;
-            VisitNode((dynamic)root.Left);
+            VisitNode((dynamic)root.Right);
             shift -= step;
+            shift -= step;
+        }
+
+        public void VisitNode(AST.UnaryBitNotNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{(dynamic)root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
             shift -= step;
         }
 
@@ -621,52 +684,204 @@ namespace ecma_interp.Grammar
 
         public void VisitNode(AST.RelOperNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type} ({root.Sign})");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Right);
+            shift -= step;
+            shift -= step;
         }
 
         public void VisitNode(AST.BinaryBitOperNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type} ({root.Sign})");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Right);
+            shift -= step;
+            shift -= step;
         }
 
         public void VisitNode(AST.BinaryLogicOperNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type} ({root.Sign})");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Right);
+            shift -= step;
+            shift -= step;
         }
 
         public void VisitNode(AST.InExprNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Obj);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Cls);
+            shift -= step;
+            shift -= step;
         }
 
         public void VisitNode(AST.ParenthExprNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
         }
 
         public void VisitNode(AST.AssignmentExprNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Right);
+            shift -= step;
+            shift -= step;
         }
 
         public void VisitNode(AST.ObjectLiteralExprNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            if (root.Exprs != null)
+            {
+                foreach (var t in root.Exprs)
+                {
+                    VisitNode((dynamic)t);
+                }
+            }
+            shift -= step;
         }
 
         public void VisitNode(AST.PropertyExprAssignmentNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+PropertyName");
+            shift += step;
+            VisitNode((dynamic)root.PropName);
+            shift -= step;
+            PrintLn("+Expression");
+            shift += step;
+            VisitNode((dynamic)root.Expr);
+            shift -= step;
+            shift -= step;
         }
 
         public void VisitNode(AST.PropertyGetterNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Getter");
+            shift += step;
+            VisitNode((dynamic)root.Getter);
+            shift -= step;
+            PrintLn("+Function body");
+            shift += step;
+            VisitNode((dynamic)root.FuncBody);
+            shift -= step;
+            shift -= step;
         }
 
         public void VisitNode(AST.PropertySetterNode root)
         {
-            throw new NotImplementedException();
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Parameter");
+            shift += step;
+            VisitNode((dynamic)root.Param);
+            shift -= step;
+            PrintLn("+Function body");
+            shift += step;
+            VisitNode((dynamic)root.FuncBody);
+            shift -= step;
+            shift -= step;
         }
 
         public void VisitNode(AST.ThisExprNode root)
@@ -702,5 +917,39 @@ namespace ecma_interp.Grammar
             shift -= step;
         }
 
+        public void VisitNode(AST.KeyWordNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn($"Keyword: {root.Kword}");
+            shift -= step;
+        }
+
+        public void VisitNode(AST.EqualityExprNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{root.Type} ({root.Sign})");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn("+Left");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            PrintLn("+Right");
+            shift += step;
+            VisitNode((dynamic)root.Left);
+            shift -= step;
+            shift -= step;
+        }
     }
 }

@@ -3,10 +3,11 @@
 a++;
 a--;
 var a = -(a * b - ((c / 2) % k));
-var и = +(a * b - ((c / 2) % k));
+var b = +(a * b - ((c / 2) % k));
 ~a;
 !a;
 typeof a;
+b instanceof a;
 a || b || c;
 a && k;
 a | c;

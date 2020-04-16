@@ -447,7 +447,6 @@ identifierName: Identifier | reservedWord;
 
 reservedWord:
 	keyword
-	| futureReservedWord
 	| ( NullLiteral | BooleanLiteral);
 
 keyword:

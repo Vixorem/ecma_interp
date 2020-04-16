@@ -310,6 +310,8 @@ namespace ecma_interp.Grammar
             public RelType Rel { get; set; }
             public new string Type = "Relational operator";
             public string Sign { get; set; }
+            public Node Left { get; set; }
+            public Node Right { get; set; }
         }
 
         public class BinaryBitOperNode : Node
@@ -366,7 +368,7 @@ namespace ecma_interp.Grammar
             public new string Type = "'this' statement";
         }
 
-       
+
         public class ArrayLiteralExprNode : Node
         {
             public new string Type = "Array literal";
@@ -398,6 +400,28 @@ namespace ecma_interp.Grammar
         {
             public new string Type = "Object literal";
             public List<Node> Exprs { get; set; }
+        }
+
+        public class EqualityExprNode : Node
+        {
+            public new string Type = "Equality expression";
+            public enum OperType
+            {
+                Eq,
+                StrictEq,
+                NotEq,
+                NotStrictEq
+            }
+            public OperType Oper { get; set; }
+            public Node Left { get; set; }
+            public Node Right { get; set; }
+            public string Sign { get; set; }
+        }
+
+        public class KeyWordNode : Node
+        {
+            public new string Type = "Keyword";
+            public string Kword { get; set; }
         }
     }
 }
