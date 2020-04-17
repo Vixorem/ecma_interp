@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -7,12 +8,27 @@ namespace ecma_interp.Grammar
 {
     class ASTRepresenter
     {
+        public string FilePath { get; set; } = "";
+        public bool NoProg { get; set; } = false;
         private int shift = 0;
         private int step = 4;
+        private bool append = false;
 
         private void PrintLn(string s)
         {
-            Console.WriteLine(String.Concat(Enumerable.Repeat(" ", shift)) + s);
+            if (FilePath == "")
+            {
+                Console.WriteLine(String.Concat(Enumerable.Repeat(" ", shift)) + s);
+            }
+            else
+            {
+                using (StreamWriter sw = new StreamWriter(FilePath, append, System.Text.Encoding.Default))
+                {
+                    append = true;
+                    sw.WriteLine(String.Concat(Enumerable.Repeat(" ", shift)) + s);
+                }
+            }
+
         }
         public void VisitNode(AST.Node root)
         {
@@ -43,10 +59,13 @@ namespace ecma_interp.Grammar
             {
                 return;
             }
-            PrintLn($"+{root.Type}");
-            shift += step;
-            PrintLn($"Start: {root.Start}");
-            PrintLn($"End: {root.End}");
+            if (NoProg == false)
+            {
+                PrintLn($"+{root.Type}");
+                shift += step;
+                PrintLn($"Start: {root.Start}");
+                PrintLn($"End: {root.End}");
+            }
             if (root.List != null)
             {
                 foreach (var t in root.List)
@@ -54,7 +73,10 @@ namespace ecma_interp.Grammar
                     VisitNode((dynamic)t);
                 }
             }
-            shift -= step;
+            if (NoProg == false)
+            {
+                shift -= step;
+            }
         }
 
         public void VisitNode(AST.VarDeclListNode root)
@@ -121,6 +143,20 @@ namespace ecma_interp.Grammar
         }
 
         public void VisitNode(AST.NullLiteralNode root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+            PrintLn($"+{(dynamic)root.Type}");
+            shift += step;
+            PrintLn($"Start: {root.Start}");
+            PrintLn($"End: {root.End}");
+            PrintLn($"Value: {root.Value}");
+            shift -= step;
+        }
+
+        public void VisitNode(AST.UndefLiteralNode root)
         {
             if (root == null)
             {
@@ -352,10 +388,10 @@ namespace ecma_interp.Grammar
             VisitNode((dynamic)root.Statement);
             if (root.AlterStatement != null)
             {
-                shift -= step;
-                PrintLn($"+Alternative");
+                PrintLn($"Alternative");
                 shift += step;
                 VisitNode((dynamic)root.AlterStatement);
+                shift -= step;
             }
             shift -= step;
         }
@@ -501,11 +537,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Right);
             shift -= step;
@@ -539,11 +575,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Right);
             shift -= step;
@@ -573,11 +609,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Right);
             shift -= step;
@@ -594,11 +630,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Right);
             shift -= step;
@@ -661,7 +697,7 @@ namespace ecma_interp.Grammar
             shift -= step;
         }
 
-        public void VisitNode(AST.FunctorExprNode root)
+        public void VisitNode(AST.CalleeExprNode root)
         {
             if (root == null)
             {
@@ -674,10 +710,13 @@ namespace ecma_interp.Grammar
             VisitNode((dynamic)root.LeftExpr);
             if (root.Args != null)
             {
+                PrintLn("Args");
+                shift += step;
                 foreach (var t in root.Args)
                 {
                     VisitNode((dynamic)t);
                 }
+                shift -= step;
             }
             shift -= step;
         }
@@ -692,11 +731,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Right);
             shift -= step;
@@ -713,11 +752,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Right);
             shift -= step;
@@ -734,11 +773,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Right);
             shift -= step;
@@ -755,11 +794,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Obj);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Cls);
             shift -= step;
@@ -790,11 +829,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Right);
             shift -= step;
@@ -831,11 +870,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+PropertyName");
+            PrintLn("PropertyName");
             shift += step;
             VisitNode((dynamic)root.PropName);
             shift -= step;
-            PrintLn("+Expression");
+            PrintLn("Expression");
             shift += step;
             VisitNode((dynamic)root.Expr);
             shift -= step;
@@ -852,11 +891,9 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Getter");
             shift += step;
-            VisitNode((dynamic)root.Getter);
+            VisitNode((dynamic)root.Name);
             shift -= step;
-            PrintLn("+Function body");
             shift += step;
             VisitNode((dynamic)root.FuncBody);
             shift -= step;
@@ -873,11 +910,12 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Parameter");
+            shift += step;
+            VisitNode((dynamic)root.Name);
+            shift -= step;
             shift += step;
             VisitNode((dynamic)root.Param);
             shift -= step;
-            PrintLn("+Function body");
             shift += step;
             VisitNode((dynamic)root.FuncBody);
             shift -= step;
@@ -941,11 +979,11 @@ namespace ecma_interp.Grammar
             shift += step;
             PrintLn($"Start: {root.Start}");
             PrintLn($"End: {root.End}");
-            PrintLn("+Left");
+            PrintLn("Left:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;
-            PrintLn("+Right");
+            PrintLn("Right:");
             shift += step;
             VisitNode((dynamic)root.Left);
             shift -= step;

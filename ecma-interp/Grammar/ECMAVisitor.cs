@@ -305,7 +305,9 @@ namespace ecma_interp.Grammar
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                Statements = (AST.StatementListNode)Visit(context.statementList())
+                Statements = (context.statementList() == null)
+                    ? (null)
+                    : (AST.StatementListNode)Visit(context.statementList())
             };
         }
 
@@ -460,7 +462,7 @@ namespace ecma_interp.Grammar
                 {
                     Start = context.Start.StartIndex,
                     End = context.Stop.StopIndex,
-                    Expr = new AST.FunctorExprNode
+                    Expr = new AST.CalleeExprNode
                     {
                         Start = context.arguments().Start.StartIndex,
                         End = context.arguments().Stop.StopIndex,
@@ -541,7 +543,9 @@ namespace ecma_interp.Grammar
                 Start = context.Start.StartIndex,
                 End = context.Start.StopIndex,
                 Sign = sign,
-                Oper = op
+                Oper = op,
+                Left = (AST.Node)Visit(context.singleExpression()[0]),
+                Right = (AST.Node)Visit(context.singleExpression()[1]),
             };
         }
 
@@ -719,7 +723,27 @@ namespace ecma_interp.Grammar
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                Exprs = (List<AST.Node>)Visit(context.arrayLiteral().elementList())
+                Exprs = (List<AST.Node>)Visit(context.arrayLiteral())
+            };
+        }
+
+        public override object VisitArrayLiteral([NotNull] ECMAScriptParser.ArrayLiteralContext context)
+        {
+            var list = (List<AST.Node>)Visit(context.elementList());
+            if (context.elision() != null)
+            {
+                //todo
+                list.Add((AST.Node)Visit(context.elision()));
+            }
+            return list;
+        }
+
+        public override object VisitElision([NotNull] ECMAScriptParser.ElisionContext context)
+        {
+            return new AST.EmptyNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex
             };
         }
 
@@ -727,8 +751,9 @@ namespace ecma_interp.Grammar
         {
             var list = new List<AST.Node>();
 
-            foreach (var t in context.singleExpression())
+            foreach (var t in context.GetRuleContexts<ParserRuleContext>())
             {
+                //todo
                 list.Add((AST.Node)Visit(t));
             }
 
@@ -743,6 +768,11 @@ namespace ecma_interp.Grammar
                 End = context.Stop.StopIndex,
                 Exprs = (List<AST.Node>)Visit(context.objectLiteral())
             };
+        }
+
+        public override object VisitObjectLiteral([NotNull] ECMAScriptParser.ObjectLiteralContext context)
+        {
+            return Visit(context.propertyNameAndValueList());
         }
 
         public override object VisitPropertyNameAndValueList([NotNull] ECMAScriptParser.PropertyNameAndValueListContext context)
@@ -763,9 +793,14 @@ namespace ecma_interp.Grammar
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                Getter = (AST.Node)Visit(context.getter()),
+                Name = (AST.IdentNode)Visit(context.getter()),
                 FuncBody = (AST.Node)Visit(context.functionBody())
             };
+        }
+
+        public override object VisitGetter([NotNull] ECMAScriptParser.GetterContext context)
+        {
+            return (AST.IdentNode)Visit(context.propertyName().identifierName());
         }
 
         public override object VisitPropertySetter([NotNull] ECMAScriptParser.PropertySetterContext context)
@@ -774,9 +809,26 @@ namespace ecma_interp.Grammar
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
-                Param = (AST.Node)Visit(context.setter()),
+                Name = (AST.IdentNode)Visit(context.setter()),
+                Param = (AST.IdentNode)Visit(context.propertySetParameterList()),
                 FuncBody = (AST.Node)Visit(context.functionBody())
             };
+        }
+
+        public override object VisitPropertySetParameterList([NotNull] ECMAScriptParser.PropertySetParameterListContext context)
+        {
+            return new AST.IdentNode
+            {
+                Start = context.Start.StartIndex,
+                End = context.Stop.StopIndex,
+                Name = context.Identifier().Symbol.Text
+            };
+        }
+
+        public override object VisitSetter([NotNull] ECMAScriptParser.SetterContext context)
+        {
+
+            return (AST.IdentNode)Visit(context.propertyName().identifierName());
         }
 
         public override object VisitPropertyName([NotNull] ECMAScriptParser.PropertyNameContext context)
@@ -856,13 +908,18 @@ namespace ecma_interp.Grammar
 
         public override object VisitArgumentsExpression([NotNull] ECMAScriptParser.ArgumentsExpressionContext context)
         {
-            return new AST.FunctorExprNode
+            return new AST.CalleeExprNode
             {
                 Start = context.Start.StartIndex,
                 End = context.Stop.StopIndex,
                 LeftExpr = (AST.Node)Visit(context.singleExpression()),
                 Args = (List<AST.Node>)Visit(context.arguments())
             };
+        }
+
+        public override object VisitArguments([NotNull] ECMAScriptParser.ArgumentsContext context)
+        {
+            return Visit(context.argumentList());
         }
 
         public override object VisitArgumentList([NotNull] ECMAScriptParser.ArgumentListContext context)

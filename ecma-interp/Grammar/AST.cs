@@ -99,6 +99,11 @@ namespace ecma_interp.Grammar
             public new string Type = "Null literal";
         }
 
+        public class UndefLiteralNode : LiteralNode
+        {
+            public new string Type = "Undefined literal";
+        }
+
         public class BoolLiteralNode : LiteralNode
         {
             public new string Type = "Bool literal";
@@ -168,9 +173,9 @@ namespace ecma_interp.Grammar
         }
 
         //Functor is ment to be an expr with parenthesis
-        public class FunctorExprNode : Node
+        public class CalleeExprNode : Node
         {
-            public new string Type = "Functor expression";
+            public new string Type = "Callee expression";
             public Node LeftExpr { get; set; }
             public List<Node> Args { get; set; }
         }
@@ -385,13 +390,14 @@ namespace ecma_interp.Grammar
         public class PropertyGetterNode : Node
         {
             public new string Type = "Property getter";
-            public Node Getter { get; set; }
+            public IdentNode Name { get; set; }
             public Node FuncBody { get; set; }
         }
 
         public class PropertySetterNode : Node
         {
             public new string Type = "Property setter";
+            public IdentNode Name { get; set; }
             public Node Param { get; set; }
             public Node FuncBody { get; set; }
         }
