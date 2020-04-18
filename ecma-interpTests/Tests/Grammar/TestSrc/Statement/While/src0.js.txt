@@ -1,0 +1,29 @@
++Program
+    Start: 0
+    Line: 1
+    +While
+        Start: 0
+        Line: 1
+        +Expression sequence
+            Start: 7
+            Line: 1
+            +Identifier
+                Start: 7
+                Line: 1
+                Name: one
+        +Block
+            Start: 12
+            Line: 1
+            +Statement list
+                Start: 17
+                Line: 2
+                +Expression sequence
+                    Start: 17
+                    Line: 2
+                    +Callee expression
+                        Start: 17
+                        Line: 2
+                        +Identifier
+                            Start: 17
+                            Line: 2
+                            Name: two

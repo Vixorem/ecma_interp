@@ -3,6 +3,7 @@ using Antlr4.Runtime.Misc;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static ecma_interp.Grammar.Constants;
 
 namespace ecma_interp.Grammar
 {
@@ -13,7 +14,7 @@ namespace ecma_interp.Grammar
             var program = new AST.ProgramNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 List = new List<AST.Node>(),
             };
 
@@ -27,7 +28,7 @@ namespace ecma_interp.Grammar
             return new AST.EmptyNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex
+                Line = context.Start.Line
             };
         }
 
@@ -36,7 +37,7 @@ namespace ecma_interp.Grammar
             return new AST.DeleteNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Expr = (AST.Node)Visit(context.singleExpression())
             };
         }
@@ -46,47 +47,51 @@ namespace ecma_interp.Grammar
             return new AST.VoidNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Expr = (AST.Node)Visit(context.singleExpression())
             };
         }
 
         public override object VisitUnaryMinusExpression([NotNull] ECMAScriptParser.UnaryMinusExpressionContext context)
         {
-            return new AST.UnaryMinusNode
+            return new AST.UnaryOperNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
+                Oper = UnaryOper.Minus,
                 Expr = (AST.Node)Visit(context.singleExpression())
             };
         }
 
         public override object VisitUnaryPlusExpression([NotNull] ECMAScriptParser.UnaryPlusExpressionContext context)
         {
-            return new AST.UnaryPlusNode
+            return new AST.UnaryOperNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
+                Oper = UnaryOper.Plus,
                 Expr = (AST.Node)Visit(context.singleExpression())
             };
         }
 
         public override object VisitNotExpression([NotNull] ECMAScriptParser.NotExpressionContext context)
         {
-            return new AST.UnaryNotNode
+            return new AST.UnaryOperNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
+                Oper = UnaryOper.Neg,
                 Expr = (AST.Node)Visit(context.singleExpression())
             };
         }
 
         public override object VisitBitNotExpression([NotNull] ECMAScriptParser.BitNotExpressionContext context)
         {
-            return new AST.UnaryBitNotNode
+            return new AST.BitUnaryOperNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
+                Oper = BitUnaryOper.Neg,
                 Expr = (AST.Node)Visit(context.singleExpression())
             };
         }
@@ -96,62 +101,33 @@ namespace ecma_interp.Grammar
             return new AST.AdditiveNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1]),
-                Oper = (context.additOpers().Start.Text == "+")
-                    ? (AST.AdditiveNode.OperType.Add)
-                    : (AST.AdditiveNode.OperType.Sub)
+                Oper = AdditiveOperMap[context.additOpers().Start.Text]
             };
         }
 
         public override object VisitMultiplicativeExpression([NotNull] ECMAScriptParser.MultiplicativeExpressionContext context)
         {
-            AST.MultiplicNode.OperType op;
-            if (context.multOpers().Start.Text == "*")
-            {
-                op = AST.MultiplicNode.OperType.Mul;
-            }
-            else if (context.multOpers().Start.Text == "/")
-            {
-                op = AST.MultiplicNode.OperType.Div;
-            }
-            else
-            {
-                op = AST.MultiplicNode.OperType.Mod;
-            }
             return new AST.MultiplicNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1]),
-                Oper = op
+                Oper = MultiplicOperMap[context.multOpers().Start.Text]
             };
         }
 
         public override object VisitBitShiftExpression([NotNull] ECMAScriptParser.BitShiftExpressionContext context)
         {
-
-            AST.BitWiseNode.WiseType type;
-            if (context.bitWiseSigns().Start.Text == ">>>")
-            {
-                type = AST.BitWiseNode.WiseType.ZeroRight;
-            }
-            else if (context.bitWiseSigns().Start.Text == ">>")
-            {
-                type = AST.BitWiseNode.WiseType.SignedRight;
-            }
-            else
-            {
-                type = AST.BitWiseNode.WiseType.ZeroLeft;
-            }
             return new AST.BitWiseNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Sign = context.bitWiseSigns().Start.Text,
-                Wise = type,
+                Oper = BitShiftMap[context.bitWiseSigns().Start.Text],
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1])
             };
@@ -162,7 +138,7 @@ namespace ecma_interp.Grammar
             return new AST.EmptyNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex
+                Line = context.Start.Line
             };
         }
 
@@ -178,7 +154,7 @@ namespace ecma_interp.Grammar
             return new AST.StatementListNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Statements = list
             };
         }
@@ -188,7 +164,7 @@ namespace ecma_interp.Grammar
             var declList = new AST.VarDeclListNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
             };
 
             declList.VarDecls = (List<AST.VarDeclNode>)Visit(context.variableDeclarationList());
@@ -213,7 +189,7 @@ namespace ecma_interp.Grammar
             return new AST.VarDeclNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Name = context.Start.Text,
                 Init = (context.initialiser() == null)
                     ? (null)
@@ -226,7 +202,7 @@ namespace ecma_interp.Grammar
             return new AST.InitialiserNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Value = (context.singleExpression() == null)
                     ? (null)
                     : ((AST.Node)Visit(context.singleExpression()))
@@ -240,7 +216,7 @@ namespace ecma_interp.Grammar
                 return new AST.NullLiteralNode
                 {
                     Start = context.Start.StartIndex,
-                    End = context.Stop.StopIndex,
+                    Line = context.Start.Line,
                     Value = "null"
                 };
             }
@@ -250,7 +226,7 @@ namespace ecma_interp.Grammar
                 return new AST.BoolLiteralNode
                 {
                     Start = context.Start.StartIndex,
-                    End = context.Stop.StopIndex,
+                    Line = context.Start.Line,
                     Value = context.literal().BooleanLiteral().Symbol.Text
                 };
             }
@@ -260,7 +236,7 @@ namespace ecma_interp.Grammar
                 return new AST.StringLiteralNode
                 {
                     Start = context.Start.StartIndex,
-                    End = context.Stop.StopIndex,
+                    Line = context.Start.Line,
                     Value = context.literal().StringLiteral().Symbol.Text
                 };
             }
@@ -276,7 +252,7 @@ namespace ecma_interp.Grammar
                 return new AST.NumericLiteralNode
                 {
                     Start = context.Start.StartIndex,
-                    End = context.Stop.StopIndex,
+                    Line = context.Start.Line,
                     Value = context.HexIntegerLiteral().Symbol.Text
                 };
             }
@@ -286,7 +262,7 @@ namespace ecma_interp.Grammar
                 return new AST.NumericLiteralNode
                 {
                     Start = context.Start.StartIndex,
-                    End = context.Stop.StopIndex,
+                    Line = context.Start.Line,
                     Value = context.DecimalLiteral().Symbol.Text
                 };
             }
@@ -294,7 +270,7 @@ namespace ecma_interp.Grammar
             return new AST.NumericLiteralNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Value = context.OctalIntegerLiteral().Symbol.Text
             };
         }
@@ -304,8 +280,10 @@ namespace ecma_interp.Grammar
             return new AST.BlockNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
-                Statements = (AST.StatementListNode)Visit(context.statementList())
+                Line = context.Start.Line,
+                Statements = (context.statementList() == null)
+                    ? (null)
+                    : (AST.StatementListNode)Visit(context.statementList())
             };
         }
 
@@ -314,7 +292,7 @@ namespace ecma_interp.Grammar
             return new AST.EmptyNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
             };
         }
 
@@ -323,7 +301,7 @@ namespace ecma_interp.Grammar
             return new AST.MemberDotExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Expr = (AST.Node)Visit(context.singleExpression()),
                 Ident = (AST.IdentNode)Visit(context.identifierName())
             };
@@ -339,7 +317,7 @@ namespace ecma_interp.Grammar
             AST.ExprSequenceNode exprSeq = new AST.ExprSequenceNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Exprs = new List<AST.Node>()
             };
 
@@ -356,7 +334,7 @@ namespace ecma_interp.Grammar
             return new AST.IfNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Cond = (AST.ExprSequenceNode)Visit(context.expressionSequence()),
                 Statement = (AST.Node)Visit(context.statement()[0]),
                 AlterStatement = (context.statement().Length == 2)
@@ -370,7 +348,7 @@ namespace ecma_interp.Grammar
             return new AST.WhileNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Body = (AST.Node)Visit(context.statement()),
                 Cond = (AST.ExprSequenceNode)Visit(context.expressionSequence())
             };
@@ -381,7 +359,7 @@ namespace ecma_interp.Grammar
             return new AST.ReturnNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 ExprSeq = (context.expressionSequence() == null)
                     ? (null)
                     : ((AST.ExprSequenceNode)Visit(context.expressionSequence()))
@@ -398,7 +376,7 @@ namespace ecma_interp.Grammar
             return new AST.ContinueNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex
+                Line = context.Start.Line
             };
         }
 
@@ -412,7 +390,7 @@ namespace ecma_interp.Grammar
             return new AST.BreakNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex
+                Line = context.Start.Line
             };
         }
 
@@ -421,7 +399,7 @@ namespace ecma_interp.Grammar
             return new AST.FunctionExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Name = context.Identifier()?.Symbol.Text ?? "",
                 Params = (context.formalParameterList() == null)
                     ? (null)
@@ -434,9 +412,8 @@ namespace ecma_interp.Grammar
         {
             return new AST.ExprSequenceNode
             {
-                Type = "Function body",
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Exprs = (context.sourceElements() == null)
                     ? (null)
                     : ((List<AST.Node>)Visit(context.sourceElements()))
@@ -450,7 +427,7 @@ namespace ecma_interp.Grammar
                 return new AST.NewExprNode
                 {
                     Start = context.Start.StartIndex,
-                    End = context.Stop.StopIndex,
+                    Line = context.Start.Line,
                     Expr = (AST.Node)Visit(context.singleExpression())
                 };
             }
@@ -459,11 +436,11 @@ namespace ecma_interp.Grammar
                 return new AST.NewExprNode
                 {
                     Start = context.Start.StartIndex,
-                    End = context.Stop.StopIndex,
-                    Expr = new AST.FunctorExprNode
+                    Line = context.Start.Line,
+                    Expr = new AST.CalleeExprNode
                     {
                         Start = context.arguments().Start.StartIndex,
-                        End = context.arguments().Stop.StopIndex,
+                        Line = context.arguments().Start.Line,
                         LeftExpr = (AST.Node)Visit(context.singleExpression()),
                         Args = (List<AST.Node>)Visit(context.arguments())
                     }
@@ -477,7 +454,7 @@ namespace ecma_interp.Grammar
             {
                 Name = context.Identifier().Symbol.Text,
                 Start = context.Identifier().Symbol.StartIndex,
-                End = context.Identifier().Symbol.StopIndex
+                Line = context.Identifier().Symbol.Line
             };
         }
 
@@ -488,7 +465,7 @@ namespace ecma_interp.Grammar
                 return new AST.NullLiteralNode
                 {
                     Start = context.NullLiteral().Symbol.StartIndex,
-                    End = context.NullLiteral().Symbol.StopIndex,
+                    Line = context.NullLiteral().Symbol.Line,
                     Value = "null"
                 };
             }
@@ -497,7 +474,7 @@ namespace ecma_interp.Grammar
                 return new AST.BoolLiteralNode
                 {
                     Start = context.BooleanLiteral().Symbol.StartIndex,
-                    End = context.BooleanLiteral().Symbol.StopIndex,
+                    Line = context.BooleanLiteral().Symbol.Line,
                     Value = context.BooleanLiteral().Symbol.Text
                 };
             }
@@ -510,38 +487,20 @@ namespace ecma_interp.Grammar
             return new AST.KeyWordNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Start.StopIndex,
-                Kword = context.Start.Text
+                Line = context.Start.Line,
+                Kword = KeyWordMap[context.Start.Text]
             };
         }
 
         public override object VisitEqualityExpression([NotNull] ECMAScriptParser.EqualityExpressionContext context)
         {
-            var sign = context.Start.Text;
-            AST.EqualityExprNode.OperType op;
-            if (sign == "==")
-            {
-                op = AST.EqualityExprNode.OperType.Eq;
-            }
-            else if (sign == "!=")
-            {
-                op = AST.EqualityExprNode.OperType.NotEq;
-            }
-            else if (sign == "===")
-            {
-                op = AST.EqualityExprNode.OperType.StrictEq;
-            }
-            else
-            {
-                op = AST.EqualityExprNode.OperType.NotStrictEq;
-            }
-
             return new AST.EqualityExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Start.StopIndex,
-                Sign = sign,
-                Oper = op
+                Line = context.Start.Line,
+                Oper = EqualityMap[context.eqOper().GetText()],
+                Left = (AST.Node)Visit(context.singleExpression()[0]),
+                Right = (AST.Node)Visit(context.singleExpression()[1]),
             };
         }
 
@@ -551,7 +510,7 @@ namespace ecma_interp.Grammar
             {
                 Name = context.Identifier()?.Symbol.Text ?? context.reservedWord().Start.Text,
                 Start = context.Identifier().Symbol.StartIndex,
-                End = context.Identifier().Symbol.StopIndex
+                Line = context.Identifier().Symbol.Line
             };
         }
 
@@ -560,7 +519,7 @@ namespace ecma_interp.Grammar
             return new AST.FunctionDeclNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Name = (context.Identifier() == null)
                     ? ("")
                     : (context.Identifier().Symbol.Text),
@@ -585,30 +544,13 @@ namespace ecma_interp.Grammar
 
         public override object VisitRelationalExpression([NotNull] ECMAScriptParser.RelationalExpressionContext context)
         {
-            AST.RelOperNode.RelType t;
-            var sign = context.relatOper().Start.Text;
-            if (sign == "<")
-            {
-                t = AST.RelOperNode.RelType.Less;
-            }
-            else if (sign == "<=")
-            {
-                t = AST.RelOperNode.RelType.LessEq;
-            }
-            else if (sign == ">")
-            {
-                t = AST.RelOperNode.RelType.Greater;
-            }
-            else
-            {
-                t = AST.RelOperNode.RelType.GreaterEq;
-            }
             return new AST.RelOperNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
-                Rel = t,
-                Sign = sign
+                Line = context.Start.Line,
+                Oper = RelationMap[context.relatOper().Start.Text],
+                Left = (AST.Node)Visit(context.singleExpression()[0]),
+                Right = (AST.Node)Visit(context.singleExpression()[1])
             };
         }
 
@@ -617,7 +559,7 @@ namespace ecma_interp.Grammar
             return new AST.InstanceOfNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1])
             };
@@ -627,13 +569,11 @@ namespace ecma_interp.Grammar
         {
             return new AST.BinaryBitOperNode
             {
-                Type = "Bit AND operation",
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1]),
-                Oper = AST.BinaryBitOperNode.OperType.BitAnd,
-                Sign = "&"
+                Oper = BitOper.And
             };
         }
 
@@ -641,13 +581,11 @@ namespace ecma_interp.Grammar
         {
             return new AST.BinaryBitOperNode
             {
-                Type = "Bit OR operation",
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1]),
-                Oper = AST.BinaryBitOperNode.OperType.BitOr,
-                Sign = "|"
+                Oper = BitOper.Or
             };
         }
 
@@ -655,13 +593,11 @@ namespace ecma_interp.Grammar
         {
             return new AST.BinaryBitOperNode
             {
-                Type = "Bit XOR operation",
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1]),
-                Oper = AST.BinaryBitOperNode.OperType.BitXor,
-                Sign = "^"
+                Oper = BitOper.Xor
             };
         }
 
@@ -669,13 +605,11 @@ namespace ecma_interp.Grammar
         {
             return new AST.BinaryLogicOperNode
             {
-                Type = "Logic AND operation",
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1]),
-                Oper = AST.BinaryLogicOperNode.OperType.And,
-                Sign = "&&"
+                Oper = LogicalOper.And
             };
         }
 
@@ -683,13 +617,11 @@ namespace ecma_interp.Grammar
         {
             return new AST.BinaryLogicOperNode
             {
-                Type = "Logic OR operation",
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1]),
-                Oper = AST.BinaryLogicOperNode.OperType.And,
-                Sign = "||"
+                Oper = LogicalOper.And,
             };
         }
 
@@ -698,7 +630,7 @@ namespace ecma_interp.Grammar
             return new AST.AssignmentExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1])
             };
@@ -709,7 +641,7 @@ namespace ecma_interp.Grammar
             return new AST.ThisExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex
+                Line = context.Start.Line
             };
         }
 
@@ -718,18 +650,57 @@ namespace ecma_interp.Grammar
             return new AST.ArrayLiteralExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
-                Exprs = (List<AST.Node>)Visit(context.arrayLiteral().elementList())
+                Line = context.Start.Line,
+                Exprs = (List<AST.Node>)Visit(context.arrayLiteral())
             };
+        }
+
+        public override object VisitArrayLiteral([NotNull] ECMAScriptParser.ArrayLiteralContext context)
+        {
+            var list = (List<AST.Node>)Visit(context.elementList());
+            if (context.elision() != null)
+            {
+                for (int i = 0; i < context.elision().GetText().Length; ++i)
+                {
+                    if (context.elision().GetText()[i] == ',')
+                    {
+                        list.Add((AST.Node)new AST.UndefLiteralNode
+                        {
+                            Start = context.elision().SourceInterval.a + i,
+                            Line = context.elision().SourceInterval.a + i,
+                            Value = "undefined"
+                        });
+                    }
+                }
+            }
+            return list;
         }
 
         public override object VisitElementList([NotNull] ECMAScriptParser.ElementListContext context)
         {
             var list = new List<AST.Node>();
 
-            foreach (var t in context.singleExpression())
+            foreach (var t in context.GetRuleContexts<ParserRuleContext>())
             {
-                list.Add((AST.Node)Visit(t));
+                if (t.GetText()[0] == ',')
+                {
+                    for (int i = 0; i < t.GetText().Length; ++i)
+                    {
+                        if (t.GetText()[i] == ',')
+                        {
+                            list.Add((AST.Node)new AST.UndefLiteralNode
+                            {
+                                Start = t.SourceInterval.a + i,
+                                Line = t.SourceInterval.a + i,
+                                Value = "undefined"
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    list.Add((AST.Node)Visit(t));
+                }
             }
 
             return list;
@@ -740,9 +711,14 @@ namespace ecma_interp.Grammar
             return new AST.ObjectLiteralExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Exprs = (List<AST.Node>)Visit(context.objectLiteral())
             };
+        }
+
+        public override object VisitObjectLiteral([NotNull] ECMAScriptParser.ObjectLiteralContext context)
+        {
+            return Visit(context.propertyNameAndValueList());
         }
 
         public override object VisitPropertyNameAndValueList([NotNull] ECMAScriptParser.PropertyNameAndValueListContext context)
@@ -762,10 +738,15 @@ namespace ecma_interp.Grammar
             return new AST.PropertyGetterNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
-                Getter = (AST.Node)Visit(context.getter()),
+                Line = context.Start.Line,
+                Name = (AST.IdentNode)Visit(context.getter()),
                 FuncBody = (AST.Node)Visit(context.functionBody())
             };
+        }
+
+        public override object VisitGetter([NotNull] ECMAScriptParser.GetterContext context)
+        {
+            return (AST.IdentNode)Visit(context.propertyName().identifierName());
         }
 
         public override object VisitPropertySetter([NotNull] ECMAScriptParser.PropertySetterContext context)
@@ -773,10 +754,27 @@ namespace ecma_interp.Grammar
             return new AST.PropertySetterNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
-                Param = (AST.Node)Visit(context.setter()),
+                Line = context.Start.Line,
+                Name = (AST.IdentNode)Visit(context.setter()),
+                Param = (AST.IdentNode)Visit(context.propertySetParameterList()),
                 FuncBody = (AST.Node)Visit(context.functionBody())
             };
+        }
+
+        public override object VisitPropertySetParameterList([NotNull] ECMAScriptParser.PropertySetParameterListContext context)
+        {
+            return new AST.IdentNode
+            {
+                Start = context.Start.StartIndex,
+                Line = context.Start.Line,
+                Name = context.Identifier().Symbol.Text
+            };
+        }
+
+        public override object VisitSetter([NotNull] ECMAScriptParser.SetterContext context)
+        {
+
+            return (AST.IdentNode)Visit(context.propertyName().identifierName());
         }
 
         public override object VisitPropertyName([NotNull] ECMAScriptParser.PropertyNameContext context)
@@ -786,7 +784,7 @@ namespace ecma_interp.Grammar
                 return new AST.StringLiteralNode
                 {
                     Start = context.Start.StartIndex,
-                    End = context.Stop.StopIndex,
+                    Line = context.Start.Line,
                     Value = context.StringLiteral().Symbol.Text
                 };
             }
@@ -805,7 +803,7 @@ namespace ecma_interp.Grammar
             return new AST.PropertyExprAssignmentNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 PropName = (AST.Node)Visit(context.propertyName()),
                 Expr = (AST.Node)Visit(context.singleExpression())
             };
@@ -816,7 +814,7 @@ namespace ecma_interp.Grammar
             return new AST.ParenthExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Expr = (AST.Node)Visit(context.expressionSequence())
             };
         }
@@ -826,7 +824,7 @@ namespace ecma_interp.Grammar
             AST.FormalParamList list = new AST.FormalParamList()
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Idents = new List<AST.IdentNode>()
             };
 
@@ -836,7 +834,7 @@ namespace ecma_interp.Grammar
                 {
                     Name = ident.Symbol.Text,
                     Start = ident.Symbol.StartIndex,
-                    End = ident.Symbol.StopIndex
+                    Line = ident.Symbol.Line
                 });
             }
 
@@ -848,7 +846,7 @@ namespace ecma_interp.Grammar
             return new AST.MemberIndExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 Expr = (AST.Node)Visit(context.singleExpression()),
                 Ind = (AST.ExprSequenceNode)Visit(context.expressionSequence()),
             };
@@ -856,13 +854,20 @@ namespace ecma_interp.Grammar
 
         public override object VisitArgumentsExpression([NotNull] ECMAScriptParser.ArgumentsExpressionContext context)
         {
-            return new AST.FunctorExprNode
+            return new AST.CalleeExprNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
+                Line = context.Start.Line,
                 LeftExpr = (AST.Node)Visit(context.singleExpression()),
                 Args = (List<AST.Node>)Visit(context.arguments())
             };
+        }
+
+        public override object VisitArguments([NotNull] ECMAScriptParser.ArgumentsContext context)
+        {
+            return (context.argumentList() == null)
+                    ? (null)
+                    : (Visit(context.argumentList()));
         }
 
         public override object VisitArgumentList([NotNull] ECMAScriptParser.ArgumentListContext context)
@@ -879,41 +884,45 @@ namespace ecma_interp.Grammar
 
         public override object VisitPostIncrementExpression([NotNull] ECMAScriptParser.PostIncrementExpressionContext context)
         {
-            return new AST.PostIncExprNode
+            return new AST.ExprUpdateNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
-                Expr = (AST.Node)Visit(context.singleExpression())
+                Line = context.Start.Line,
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Oper = ExprUpdate.PostfixInc
             };
         }
 
         public override object VisitPostDecreaseExpression([NotNull] ECMAScriptParser.PostDecreaseExpressionContext context)
         {
-            return new AST.PostDecExprNode
+            return new AST.ExprUpdateNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
-                Expr = (AST.Node)Visit(context.singleExpression())
+                Line = context.Start.Line,
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Oper = ExprUpdate.PrefixDec
             };
         }
 
         public override object VisitPreIncrementExpression([NotNull] ECMAScriptParser.PreIncrementExpressionContext context)
         {
-            return new AST.PrefDecExprNode
+            return new AST.ExprUpdateNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
-                Expr = (AST.Node)Visit(context.singleExpression())
+                Line = context.Start.Line,
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Oper = ExprUpdate.PrefixInc
             };
         }
 
         public override object VisitPreDecreaseExpression([NotNull] ECMAScriptParser.PreDecreaseExpressionContext context)
         {
-            return new AST.PostDecExprNode
+            return new AST.ExprUpdateNode
             {
                 Start = context.Start.StartIndex,
-                End = context.Stop.StopIndex,
-                Expr = (AST.Node)Visit(context.singleExpression())
+                Line = context.Start.Line,
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Oper = ExprUpdate.PrefixDec
             };
         }
     }

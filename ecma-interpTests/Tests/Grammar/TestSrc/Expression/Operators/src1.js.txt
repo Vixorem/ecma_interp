@@ -1,0 +1,14 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Expression update
+            Start: 0
+            Line: 1
+            Oper: PostfixInc
+            +Identifier
+                Start: 0
+                Line: 1
+                Name: a

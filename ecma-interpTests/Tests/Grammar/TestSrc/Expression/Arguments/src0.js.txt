@@ -1,0 +1,26 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Callee expression
+            Start: 0
+            Line: 1
+            +Identifier
+                Start: 0
+                Line: 1
+                Name: a
+            Args:
+                +Numeric literal
+                    Start: 2
+                    Line: 1
+                    Value: 1
+                +String literal
+                    Start: 5
+                    Line: 1
+                    Value: "two"
+                +Identifier
+                    Start: 12
+                    Line: 1
+                    Name: a

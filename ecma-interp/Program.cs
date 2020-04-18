@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using ecma_interp.Grammar;
+using ecma_interp.Utils;
 using System;
 using System.Text;
 
@@ -18,19 +19,12 @@ namespace ecma_interp
             {
                 text.AppendLine(input);
             }
-            var inputStream = new AntlrInputStream(text.ToString());
-            var lexer = new ECMAScriptLexer(inputStream);
-            lexer.RemoveErrorListeners();
-            var tokenStream = new CommonTokenStream(lexer);
-            var parser = new ECMAScriptParser(tokenStream) { BuildParseTree = true };
-            parser.RemoveErrorListeners();
-            parser.AddErrorListener(MyErrorListener<IToken>.INSTANCE);
-            var ctx = parser.program();
-            var visitor = new ECMAVisitor();
-            var node = visitor.Visit(ctx);
-            //Console.WriteLine(ctx.ToStringTree());
+            var parser = new ParserRunner(text.ToString());
+            var node = parser.Run();
             var printer = new ASTRepresenter();
-            printer.VisitNode((dynamic)node);
+            printer.VisitNode(node);
+            //var saver = new ASTSaver();
+            //saver.SaveAll();
         }
     }
 }

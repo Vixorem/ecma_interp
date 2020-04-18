@@ -1,0 +1,32 @@
++Program
+    Start: 0
+    Line: 1
+    +Variable declaration list
+        Start: 0
+        Line: 1
+        +Variable declaration
+            Start: 4
+            Line: 1
+            Name: x
+            +Initialiser
+                Start: 6
+                Line: 1
+                +Numeric literal
+                    Start: 8
+                    Line: 1
+                    Value: 5
+        +Variable declaration
+            Start: 14
+            Line: 2
+            Name: y
+            +Initialiser
+                Start: 16
+                Line: 2
+                +Bool literal
+                    Start: 18
+                    Line: 2
+                    Value: true
+        +Variable declaration
+            Start: 27
+            Line: 3
+            Name: z

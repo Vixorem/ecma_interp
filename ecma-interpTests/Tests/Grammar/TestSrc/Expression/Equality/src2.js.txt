@@ -1,0 +1,20 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Equality expression
+            Start: 0
+            Line: 1
+            Oper: NotEq
+            Left:
+                +Identifier
+                    Start: 0
+                    Line: 1
+                    Name: a
+            Right:
+                +Identifier
+                    Start: 5
+                    Line: 1
+                    Name: b

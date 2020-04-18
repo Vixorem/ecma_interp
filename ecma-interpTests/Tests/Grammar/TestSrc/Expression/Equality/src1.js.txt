@@ -1,0 +1,20 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Equality expression
+            Start: 0
+            Line: 1
+            Oper: StrictEq
+            Left:
+                +Identifier
+                    Start: 0
+                    Line: 1
+                    Name: a
+            Right:
+                +Numeric literal
+                    Start: 6
+                    Line: 1
+                    Value: 3

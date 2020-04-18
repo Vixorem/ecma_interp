@@ -1,0 +1,25 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +'new' expression
+            Start: 0
+            Line: 1
+            +Callee expression
+                Start: 4
+                Line: 1
+                +Identifier
+                    Start: 4
+                    Line: 1
+                    Name: z
+                Args:
+                    +Identifier
+                        Start: 6
+                        Line: 1
+                        Name: a
+                    +Identifier
+                        Start: 9
+                        Line: 1
+                        Name: b

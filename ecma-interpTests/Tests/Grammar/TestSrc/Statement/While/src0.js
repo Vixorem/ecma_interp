@@ -1,0 +1,4 @@
+while (one) {
+  two();
+}
+

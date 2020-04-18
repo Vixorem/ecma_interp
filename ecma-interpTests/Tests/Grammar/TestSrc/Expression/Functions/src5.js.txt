@@ -1,0 +1,10 @@
++Program
+    Start: 0
+    Line: 1
+    +Function declaration
+        Start: 0
+        Line: 1
+        Name: testfunc1
+        +Expression sequence
+            Start: 22
+            Line: 1

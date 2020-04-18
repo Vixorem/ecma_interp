@@ -1,0 +1,16 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Void statement
+            Start: 0
+            Line: 1
+            +Function expression
+                Start: 5
+                Line: 1
+                Name: a
+                +Expression sequence
+                    Start: 19
+                    Line: 1
