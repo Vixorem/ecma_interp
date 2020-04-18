@@ -86,6 +86,14 @@ namespace ecma_interp.Grammar
             In
         }
 
+        public enum ExprUpdate
+        {
+            PrefixInc,
+            PrefixDec,
+            PostfixInc,
+            PostfixDec
+        }
+
         public static Dictionary<string, Relation> RelationMap = new Dictionary<string, Relation>
         {
             {"<", Relation.Less},
@@ -165,5 +173,6 @@ namespace ecma_interp.Grammar
             {"delete", KeyWord.Delete},
             {"in", KeyWord.In},
         };
+
     }
 }

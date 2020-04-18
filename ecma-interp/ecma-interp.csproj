@@ -12,19 +12,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Tests\Grammar\TestSrc\Expression\Index\" />
-    <Folder Include="Tests\Grammar\TestSrc\Expression\Arguments\" />
-    <Folder Include="Tests\Grammar\TestSrc\Expression\Dot\" />
-    <Folder Include="Tests\Grammar\TestSrc\Expression\Literals\" />
-    <Folder Include="Tests\Grammar\TestSrc\Expression\New\" />
-    <Folder Include="Tests\Grammar\TestSrc\Statement\Block\" />
-    <Folder Include="Tests\Grammar\TestSrc\Statement\If\" />
-    <Folder Include="Tests\Grammar\TestSrc\Statement\While\" />
-    <Folder Include="Tests\Grammar\TestSrc\Statement\Variable\" />
   </ItemGroup>
 
 </Project>

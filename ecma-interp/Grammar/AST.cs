@@ -10,7 +10,7 @@ namespace ecma_interp.Grammar
      It's built within ECMAVisitor class.
     */
 
-    class AST
+    public class AST
     {
         public static Dictionary<Type, string> NodeTypes = new Dictionary<Type, string>
         {
@@ -42,10 +42,7 @@ namespace ecma_interp.Grammar
             {typeof(MemberDotExprNode), "Member expression (dot)"},
             {typeof(CalleeExprNode), "Callee expression"},
             {typeof(NewExprNode), "'new' expression"},
-            {typeof(PostIncExprNode), "Postfix increment"},
-            {typeof(PostDecExprNode), "Postfix decrement"},
-            {typeof(PrefIncExprNode), "Prefix increment"},
-            {typeof(PrefDecExprNode), "Prefix decrement"},
+            {typeof(ExprUpdateNode), "Expression update"},
             {typeof(DeleteNode), "Delete statement"},
             {typeof(VoidNode), "Void statement"},
             {typeof(TypeofNode), "Typeof statement"},
@@ -217,23 +214,9 @@ namespace ecma_interp.Grammar
             public Node Expr { get; set; }
         }
 
-        public class PostIncExprNode : Node
+        public class ExprUpdateNode : Node
         {
-            public Node Expr { get; set; }
-        }
-
-        public class PostDecExprNode : Node
-        {
-            public Node Expr { get; set; }
-        }
-
-        public class PrefIncExprNode : Node
-        {
-            public Node Expr { get; set; }
-        }
-
-        public class PrefDecExprNode : Node
-        {
+            public ExprUpdate Oper { get; set; }
             public Node Expr { get; set; }
         }
 
@@ -295,7 +278,7 @@ namespace ecma_interp.Grammar
 
         public class RelOperNode : Node
         {
-            public Relation Rel { get; set; }
+            public Relation Oper { get; set; }
             public Node Left { get; set; }
             public Node Right { get; set; }
         }

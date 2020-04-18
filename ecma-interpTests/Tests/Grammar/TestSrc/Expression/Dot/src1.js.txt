@@ -1,0 +1,37 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Member expression (dot)
+            Start: 0
+            Line: 1
+            Object:
+                +Member expression (dot)
+                    Start: 0
+                    Line: 1
+                    Object:
+                        +Member expression (dot)
+                            Start: 0
+                            Line: 1
+                            Object:
+                                +Identifier
+                                    Start: 0
+                                    Line: 1
+                                    Name: a
+                            Property:
+                                +Identifier
+                                    Start: 2
+                                    Line: 1
+                                    Name: b
+                    Property:
+                        +Identifier
+                            Start: 4
+                            Line: 1
+                            Name: c
+            Property:
+                +Identifier
+                    Start: 6
+                    Line: 1
+                    Name: d

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ecma_interp
 {
-    class ParserRunner
+    public class ParserRunner
     {
         public string Input { get; set; }
         public ParserRunner(string input)

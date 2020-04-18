@@ -1,0 +1,44 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Assignment expression
+            Start: 0
+            Line: 1
+            Left:
+                +Identifier
+                    Start: 0
+                    Line: 1
+                    Name: a
+            Right:
+                +Object literal
+                    Start: 4
+                    Line: 1
+                    +Property assignment
+                        Start: 9
+                        Line: 2
+                        Property name:
+                            +Identifier
+                                Start: 9
+                                Line: 2
+                                Name: f
+                        Expression:
+                            +String literal
+                                Start: 12
+                                Line: 2
+                                Value: "hello"
+                    +Property assignment
+                        Start: 24
+                        Line: 3
+                        Property name:
+                            +Identifier
+                                Start: 24
+                                Line: 3
+                                Name: b
+                        Expression:
+                            +Numeric literal
+                                Start: 27
+                                Line: 3
+                                Value: 5

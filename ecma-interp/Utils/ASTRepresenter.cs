@@ -3,16 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static ecma_interp.Grammar.Constants;
 
 namespace ecma_interp.Grammar
 {
-    class ASTRepresenter
+    public class ASTRepresenter
     {
-        public string FilePath { get; set; } = "";
+        public string FilePath { get; private set; } = "";
         public bool NoProg { get; set; } = false;
+        public bool KeepInRAM { get; set; } = false;
+        public string TextedAST { get; set; }
         private int shift = 0;
         private int step = 4;
         private bool append = false;
+        private bool outputChecked = false;
+
+        public ASTRepresenter(string path = "")
+        {
+            FilePath = path;
+        }
 
         private void PrintRootInfo(dynamic node, string altName = null)
         {
@@ -22,26 +31,50 @@ namespace ecma_interp.Grammar
             PrintLn($"Line: {node.Line}");
         }
 
-        private void PrintProps(string prop, string val)
+        private void PrintProperty(string prop, string val)
         {
             PrintLn($"{prop}: {val}");
         }
 
+        private void PrintNamedNode(string prop, dynamic node)
+        {
+            PrintLn(prop + ":");
+            shift += step;
+            VisitNode(node);
+            shift -= step;
+        }
+        private void PrintNamedNodeList(string prop, List<AST.Node> list)
+        {
+            PrintLn(prop + ":");
+            shift += step;
+            foreach (var t in list)
+            {
+                VisitNode((dynamic)t);
+            }
+            shift -= step;
+        }
+
+
         private void PrintLn(string s)
         {
+            var line = String.Concat(Enumerable.Repeat(" ", shift)) + s;
             if (FilePath == "")
             {
-                Console.WriteLine(String.Concat(Enumerable.Repeat(" ", shift)) + s);
+                Console.WriteLine(line);
             }
             else
             {
-                using (StreamWriter sw = new StreamWriter(FilePath, append, System.Text.Encoding.Default))
+                using (StreamWriter sw = new StreamWriter(FilePath, append, Encoding.Default))
                 {
                     append = true;
-                    sw.WriteLine(String.Concat(Enumerable.Repeat(" ", shift)) + s);
+                    sw.WriteLine(line);
                 }
             }
 
+            if (KeepInRAM == true)
+            {
+                TextedAST += line + Environment.NewLine;
+            }
         }
 
         public void VisitNode(AST.Node root)
@@ -62,7 +95,7 @@ namespace ecma_interp.Grammar
             }
 
             PrintRootInfo(root);
-            PrintProps("Name", root.Name);
+            PrintProperty("Name", root.Name);
             shift -= step;
         }
 
@@ -110,7 +143,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Name", root.Name);
+            PrintProperty("Name", root.Name);
             VisitNode((AST.InitialiserNode)root.Init);
             shift -= step;
         }
@@ -133,7 +166,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Value", root.Value);
+            PrintProperty("Value", root.Value);
             shift -= step;
         }
 
@@ -144,7 +177,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Value", root.Value);
+            PrintProperty("Value", root.Value);
             shift -= step;
         }
 
@@ -155,7 +188,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Value", root.Value);
+            PrintProperty("Value", root.Value);
             shift -= step;
         }
 
@@ -166,7 +199,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Value", root.Value);
+            PrintProperty("Value", root.Value);
             shift -= step;
         }
 
@@ -177,7 +210,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Value", root.Value);
+            PrintProperty("Value", root.Value);
             shift -= step;
         }
 
@@ -285,7 +318,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Name", root.Name);
+            PrintProperty("Name", root.Name);
             VisitNode(root.Params);
             VisitNode(root.FuncBody);
             shift -= step;
@@ -299,7 +332,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Name", root.Name);
+            PrintProperty("Name", root.Name);
             VisitNode(root.Params);
             VisitNode(root.FuncBody);
             shift -= step;
@@ -328,12 +361,11 @@ namespace ecma_interp.Grammar
             {
                 return;
             }
-            PrintRootInfo(root.Cond, "Condition");
+            PrintNamedNode("Condition", root.Cond);
             VisitNode((dynamic)root.Statement);
             if (root.AlterStatement != null)
             {
-                PrintLn($"Alternative");
-                VisitNode((dynamic)root.AlterStatement);
+                PrintNamedNode("Alternative", root.AlterStatement);
                 shift -= step;
             }
             shift -= step;
@@ -346,10 +378,8 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Object", "");
-            VisitNode((dynamic)root.Expr);
-            PrintProps("Index", "");
-            VisitNode(root.Ind);
+            PrintNamedNode("Object", root.Expr);
+            PrintNamedNode("Index", root.Ind);
             shift -= step;
         }
 
@@ -360,10 +390,8 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Object", "");
-            VisitNode((dynamic)root.Expr);
-            PrintProps("Property", "");
-            VisitNode(root.Ident);
+            PrintNamedNode("Object", root.Expr);
+            PrintNamedNode("Property", root.Ident);
             shift -= step;
         }
 
@@ -418,7 +446,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Oper", nameof(root.Oper));
+            PrintProperty("Oper", root.Oper.ToString());
             VisitNode((dynamic)root.Expr);
             shift -= step;
         }
@@ -430,20 +458,19 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Left);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Right);
+            PrintNamedNode("Left", root.Left);
+            PrintNamedNode("Right", root.Right);
             shift -= step;
         }
 
-        public void VisitNode(AST.PostIncExprNode root)
+        public void VisitNode(AST.ExprUpdateNode root)
         {
             if (root == null)
             {
                 return;
             }
             PrintRootInfo(root);
+            PrintProperty("Oper", root.Oper.ToString());
             VisitNode((dynamic)root.Expr);
             shift -= step;
         }
@@ -455,11 +482,9 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Oper", nameof(root.Oper));
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Left);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Right);
+            PrintProperty("Oper", root.Oper.ToString());
+            PrintNamedNode("Left", root.Left);
+            PrintNamedNode("Right", root.Right);
             shift -= step;
         }
 
@@ -470,11 +495,9 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Oper", nameof(root.Oper));
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Left);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Right);
+            PrintProperty("Oper", root.Oper.ToString());
+            PrintNamedNode("Left", root.Left);
+            PrintNamedNode("Right", root.Right);
             shift -= step;
         }
 
@@ -485,11 +508,9 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Oper", nameof(root.Oper));
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Left);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Right);
+            PrintProperty("Oper", root.Oper.ToString());
+            PrintNamedNode("Left", root.Left);
+            PrintNamedNode("Right", root.Right);
             shift -= step;
         }
 
@@ -500,40 +521,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Oper", nameof(root.Oper));
-            VisitNode((dynamic)root.Expr);
-            shift -= step;
-        }
-
-        public void VisitNode(AST.PostDecExprNode root)
-        {
-            if (root == null)
-            {
-                return;
-            }
-            PrintRootInfo(root);
-            VisitNode((dynamic)root.Expr);
-            shift -= step;
-        }
-
-        public void VisitNode(AST.PrefIncExprNode root)
-        {
-            if (root == null)
-            {
-                return;
-            }
-            PrintRootInfo(root);
-            VisitNode((dynamic)root.Expr);
-            shift -= step;
-        }
-
-        public void VisitNode(AST.PrefDecExprNode root)
-        {
-            if (root == null)
-            {
-                return;
-            }
-            PrintRootInfo(root);
+            PrintProperty("Oper", root.Oper.ToString());
             VisitNode((dynamic)root.Expr);
             shift -= step;
         }
@@ -548,11 +536,7 @@ namespace ecma_interp.Grammar
             VisitNode((dynamic)root.LeftExpr);
             if (root.Args != null)
             {
-                PrintProps("Args", "");
-                foreach (var t in root.Args)
-                {
-                    VisitNode((dynamic)t);
-                }
+                PrintNamedNodeList("Args", root.Args);
                 shift -= step;
             }
             shift -= step;
@@ -565,10 +549,9 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Left);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Right);
+            PrintProperty("Oper", root.Oper.ToString());
+            PrintNamedNode("Left", root.Left);
+            PrintNamedNode("Right", root.Right);
             shift -= step;
         }
 
@@ -579,10 +562,8 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Left);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Right);
+            PrintNamedNode("Left", root.Left);
+            PrintNamedNode("Right", root.Right);
             shift -= step;
         }
 
@@ -593,11 +574,9 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Oper", nameof(root.Oper));
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Left);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Right);
+            PrintProperty("Oper", root.Oper.ToString());
+            PrintNamedNode("Left", root.Left);
+            PrintNamedNode("Right", root.Right);
             shift -= step;
         }
 
@@ -608,10 +587,8 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Obj);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Cls);
+            PrintNamedNode("Left", root.Cls);
+            PrintNamedNode("Right", root.Obj);
             shift -= step;
         }
 
@@ -633,10 +610,8 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Left);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Right);
+            PrintNamedNode("Left", root.Left);
+            PrintNamedNode("Right", root.Right);
             shift -= step;
         }
 
@@ -665,10 +640,8 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Property name", "");
-            VisitNode((dynamic)root.PropName);
-            PrintProps("Expression", "");
-            VisitNode((dynamic)root.Expr);
+            PrintNamedNode("Property name", root.PropName);
+            PrintNamedNode("Expression", root.Expr);
             shift -= step;
         }
 
@@ -732,7 +705,7 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Keyword", nameof(root.Kword));
+            PrintProperty("Keyword", root.Kword.ToString());
             shift -= step;
         }
 
@@ -743,11 +716,9 @@ namespace ecma_interp.Grammar
                 return;
             }
             PrintRootInfo(root);
-            PrintProps("Oper", nameof(root.Oper));
-            PrintProps("Left", "");
-            VisitNode((dynamic)root.Left);
-            PrintProps("Right", "");
-            VisitNode((dynamic)root.Left);
+            PrintProperty("Oper", root.Oper.ToString());
+            PrintNamedNode("Left", root.Left);
+            PrintNamedNode("Right", root.Right);
             shift -= step;
         }
     }

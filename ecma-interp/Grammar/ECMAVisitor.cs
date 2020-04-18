@@ -494,12 +494,11 @@ namespace ecma_interp.Grammar
 
         public override object VisitEqualityExpression([NotNull] ECMAScriptParser.EqualityExpressionContext context)
         {
-            //TODO check this
             return new AST.EqualityExprNode
             {
                 Start = context.Start.StartIndex,
                 Line = context.Start.Line,
-                Oper = EqualityMap[context.Start.Text],
+                Oper = EqualityMap[context.eqOper().GetText()],
                 Left = (AST.Node)Visit(context.singleExpression()[0]),
                 Right = (AST.Node)Visit(context.singleExpression()[1]),
             };
@@ -549,7 +548,9 @@ namespace ecma_interp.Grammar
             {
                 Start = context.Start.StartIndex,
                 Line = context.Start.Line,
-                Rel = RelationMap[context.relatOper().Start.Text]
+                Oper = RelationMap[context.relatOper().Start.Text],
+                Left = (AST.Node)Visit(context.singleExpression()[0]),
+                Right = (AST.Node)Visit(context.singleExpression()[1])
             };
         }
 
@@ -883,41 +884,45 @@ namespace ecma_interp.Grammar
 
         public override object VisitPostIncrementExpression([NotNull] ECMAScriptParser.PostIncrementExpressionContext context)
         {
-            return new AST.PostIncExprNode
+            return new AST.ExprUpdateNode
             {
                 Start = context.Start.StartIndex,
                 Line = context.Start.Line,
-                Expr = (AST.Node)Visit(context.singleExpression())
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Oper = ExprUpdate.PostfixInc
             };
         }
 
         public override object VisitPostDecreaseExpression([NotNull] ECMAScriptParser.PostDecreaseExpressionContext context)
         {
-            return new AST.PostDecExprNode
+            return new AST.ExprUpdateNode
             {
                 Start = context.Start.StartIndex,
                 Line = context.Start.Line,
-                Expr = (AST.Node)Visit(context.singleExpression())
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Oper = ExprUpdate.PrefixDec
             };
         }
 
         public override object VisitPreIncrementExpression([NotNull] ECMAScriptParser.PreIncrementExpressionContext context)
         {
-            return new AST.PrefDecExprNode
+            return new AST.ExprUpdateNode
             {
                 Start = context.Start.StartIndex,
                 Line = context.Start.Line,
-                Expr = (AST.Node)Visit(context.singleExpression())
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Oper = ExprUpdate.PrefixInc
             };
         }
 
         public override object VisitPreDecreaseExpression([NotNull] ECMAScriptParser.PreDecreaseExpressionContext context)
         {
-            return new AST.PostDecExprNode
+            return new AST.ExprUpdateNode
             {
                 Start = context.Start.StartIndex,
                 Line = context.Start.Line,
-                Expr = (AST.Node)Visit(context.singleExpression())
+                Expr = (AST.Node)Visit(context.singleExpression()),
+                Oper = ExprUpdate.PrefixDec
             };
         }
     }
