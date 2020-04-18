@@ -1,0 +1,10 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +String literal
+            Start: 0
+            Line: 1
+            Value: "test string literal"

@@ -1,0 +1,28 @@
++Program
+    Start: 0
+    Line: 1
+    +Function declaration
+        Start: 0
+        Line: 1
+        Name: testfunc3
+        +Formal parameters list
+            Start: 19
+            Line: 1
+            +Identifier
+                Start: 19
+                Line: 1
+                Name: a
+            +Identifier
+                Start: 22
+                Line: 1
+                Name: b
+            +Identifier
+                Start: 25
+                Line: 1
+                Name: c
+        +Expression sequence
+            Start: 33
+            Line: 2
+            +Return statement
+                Start: 33
+                Line: 2

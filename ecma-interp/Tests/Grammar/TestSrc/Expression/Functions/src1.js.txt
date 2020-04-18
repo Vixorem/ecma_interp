@@ -1,0 +1,20 @@
++Program
+    Start: 0
+    Line: 1
+    +Variable declaration list
+        Start: 0
+        Line: 1
+        +Variable declaration
+            Start: 4
+            Line: 1
+            Name: fancVar
+            +Initialiser
+                Start: 12
+                Line: 1
+                +Function expression
+                    Start: 14
+                    Line: 1
+                    Name: 
+                    +Expression sequence
+                        Start: 27
+                        Line: 1

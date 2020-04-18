@@ -1,0 +1,45 @@
++Program
+    Start: 0
+    Line: 1
+    +Function declaration
+        Start: 0
+        Line: 1
+        Name: testfunc4
+        +Formal parameters list
+            Start: 19
+            Line: 1
+            +Identifier
+                Start: 19
+                Line: 1
+                Name: a
+            +Identifier
+                Start: 22
+                Line: 1
+                Name: b
+        +Expression sequence
+            Start: 30
+            Line: 2
+            +Variable declaration list
+                Start: 30
+                Line: 2
+                +Variable declaration
+                    Start: 34
+                    Line: 2
+                    Name: c
+                    +Initialiser
+                        Start: 36
+                        Line: 2
+                        +Numeric literal
+                            Start: 38
+                            Line: 2
+                            Value: 5
+            +Return statement
+                Start: 44
+                Line: 3
+                +Expression sequence
+                    Start: 51
+                    Line: 3
+                    +Identifier
+                        Start: 51
+                        Line: 3
+                        Name: c

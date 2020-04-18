@@ -1,0 +1,22 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Member expression (index)
+            Start: 0
+            Line: 1
+            Object: 
+            +Identifier
+                Start: 0
+                Line: 1
+                Name: a
+            Index: 
+            +Expression sequence
+                Start: 2
+                Line: 1
+                +Numeric literal
+                    Start: 2
+                    Line: 1
+                    Value: 5

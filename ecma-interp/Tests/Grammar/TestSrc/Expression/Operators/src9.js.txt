@@ -1,0 +1,10 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Identifier
+            Start: 7
+            Line: 1
+            Name: a

@@ -20,7 +20,6 @@
     <Folder Include="Tests\Grammar\TestSrc\Expression\Arguments\" />
     <Folder Include="Tests\Grammar\TestSrc\Expression\Dot\" />
     <Folder Include="Tests\Grammar\TestSrc\Expression\Literals\" />
-    <Folder Include="Tests\Grammar\TestSrc\Expression\Operators\" />
     <Folder Include="Tests\Grammar\TestSrc\Expression\New\" />
     <Folder Include="Tests\Grammar\TestSrc\Statement\Block\" />
     <Folder Include="Tests\Grammar\TestSrc\Statement\If\" />

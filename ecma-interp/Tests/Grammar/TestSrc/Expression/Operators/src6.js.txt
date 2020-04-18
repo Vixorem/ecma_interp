@@ -1,0 +1,20 @@
++Program
+    Start: 0
+    Line: 1
+    +Expression sequence
+        Start: 0
+        Line: 1
+        +Additive operation
+            Start: 0
+            Line: 1
+            Oper: Oper
+            Left: 
+            +Identifier
+                Start: 0
+                Line: 1
+                Name: a
+            Right: 
+            +Identifier
+                Start: 4
+                Line: 1
+                Name: b
